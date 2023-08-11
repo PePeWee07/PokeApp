@@ -3,19 +3,33 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ folder }}</ion-title>
+    <ion-title class="pokeverse-title"> PokeVerse </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ folder }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
+<ion-content [fullscreen]="true" class="ion-text-center center-content">
   <div id="container">
-    <strong class="capitalize">{{ folder }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <div class="top-section">
+      <img src="../../assets/img/Pokemon_logo.svg" alt="Pokemon logo" />
+    </div>
+
+    <div class="app-description">
+      <h2 >Bienvenido</h2>
+      <p>
+        Explora el mundo Pokémon y descubre sus características.
+      </p>
+    </div>
+
+    <div class="bottom-section">
+      <h6 class="capitalize" style="display: inline; color: white;">Creador por: </h6>
+      <p style="display: inline">
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.instagram.com/pepe._.roman/"
+          >José Román</a
+        >
+      </p>
+    </div>
   </div>
 </ion-content>

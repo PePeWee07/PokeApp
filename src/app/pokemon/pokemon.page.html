@@ -1,0 +1,121 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-item>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title> <h6>Pokedex</h6> </ion-title>
+      <ion-toggle slot="end" mode="md" [checked]="darkMode" (ionChange)="toogleDarkMode()">
+      </ion-toggle>
+      <ion-icon slot="end" name="moon"></ion-icon>
+    </ion-item>
+    <ion-accordion-group expand="inset">
+      <ion-accordion value="first">
+        <ion-item slot="header" color="rose">
+          <ion-icon solt="stard" name="cog"></ion-icon>
+          <ion-label>Opciones  </ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-item>
+            <ion-input
+            type="number"
+            pattern="[0-9]*"
+            label="Límite de Pokémones"
+            label-placement="stacked"
+            placeholder="Solo Números ejm:(100) min:10, max:100"
+            min="10"
+            max="100"
+            [value]="limit"
+            (ionChange)="onInputChange($event, true)"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-range style="margin-top: 10px;"
+              aria-label="Custom range"
+              [min]="10"
+              [max]="100"
+              [value]="limit"
+              [pin]="true"
+              [ticks]="true"
+              [snaps]="true"
+              (ionChange)="onRangeChange($event)"
+            >
+              <ion-icon slot="start" name="remove"></ion-icon>
+              <ion-icon slot="end" name="add"></ion-icon>
+              <div slot="start">10</div>
+              <div slot="end">100</div>
+            </ion-range>
+          </ion-item>
+
+          <ion-toast style="color: red;"
+            [isOpen]="isToastOpen"
+            message="El valor debe ser entre 10 y 100"
+            [duration]="2000"
+            (didDismiss)="onInputChange($event, false)"
+          ></ion-toast>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-text-center">
+  <div id="container">
+
+    <ion-grid *ngIf="loadedSkeleton">
+      <ion-row style="display: flex; justify-content: center;">
+        <ion-col size="6" *ngFor="let a of [1,1,1,1,1,1]">
+          <ion-card *ngIf="loadedSkeleton" class="ion-text-center">
+            <ion-card-header>
+              <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+            </ion-card-header>
+            <ion-item>
+              <ion-thumbnail style="height: 100px; width: 100px;">
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </ion-thumbnail>
+            </ion-item>
+          </ion-card>
+      </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid *ngIf="!loadedSkeleton">
+      <ion-row style="display: flex; justify-content: center;">
+        <ion-col size="auto" *ngFor="let poke of pokemon">
+          <ion-card color="light" [style]="borderCarPokemon(poke.types)" class="card-equal-height">
+            <ion-card-header>
+              <ion-card-title><h5 style="text-transform: capitalize;">{{poke.name}}</h5></ion-card-title>
+              <div *ngFor="let tipo of poke.types">
+                <div class="icon" [class]="pokeClass(tipo.type?.name)" style="margin-bottom: 3px;">
+                  <img [src]="pokeSVG(tipo.type?.name)" height="2%" width="2%"/>
+                </div>
+                <ion-card-subtitle class="typePokemon" [style.background-color]="colorType(tipo.type?.name)">
+                  {{tipo.type?.name}}
+                </ion-card-subtitle>
+              </div>
+            </ion-card-header>
+            <ion-card-content>
+              <img *ngIf="poke.sprites?.front_default; else defaultImage" [src]="poke.sprites?.front_default" [alt]="poke.name">
+            </ion-card-content>
+
+            <ng-template #defaultImage>
+              <img src="../../assets/img/spriteNull.png" alt="Imagen por defecto">
+            </ng-template>
+          </ion-card>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+
+    <!-- Infinite Scroll -->
+    <ion-infinite-scroll threshold="0px" (ionInfinite)="loadMorePokemon($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="dots"
+        loadingText="Cargando más Pokémon..."
+      ></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+  </div>
+</ion-content>
+b
