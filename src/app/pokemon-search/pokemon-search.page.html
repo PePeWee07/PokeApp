@@ -1,0 +1,148 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <h5 style="text-transform: capitalize">Búsqueda de Pokémon</h5>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-icon name="search"></ion-icon>
+    <ion-input
+      label="Buscar: "
+      [(ngModel)]="searchText"
+      labelPlacement="floating"
+      placeholder="Nombre de Pokémon ejm:(bulbasaur)"
+    >
+    </ion-input>
+    <ion-button
+      size="small"
+      color="light"
+      slot="end"
+      (click)="buscarPokemon(true)"
+      >Buscar</ion-button
+    >
+    <ion-toast
+      [isOpen]="isToastOpen"
+      message="Ingrese un nombre en el campo de busqueda"
+      [duration]="2000"
+      (didDismiss)="buscarPokemon(false)"
+    ></ion-toast>
+  </ion-item>
+
+  <div class="container" class="ion-margin-top">
+    <ion-grid *ngIf="!showCardDeafult">
+      <ion-row class="ion-justify-content-center">
+        <ion-col sizeMd="auto">
+          <ion-card
+            color="light"
+            *ngFor="let poke of pokemon"
+            [style]="borderCardPokemon(poke.types)"
+          >
+            <div class="pokemonSpirte">
+              <ion-avatar [routerLink]="['/pokemon-profile/' + poke.id]">
+                <img [src]="poke.sprites?.front_default" />
+              </ion-avatar>
+            </div>
+            <ion-card-header>
+              <ion-card-title class="ion-text-center"
+                >{{poke.name}}</ion-card-title
+              >
+              <div *ngFor="let tipo of poke.types">
+                <div
+                  class="icon"
+                  [class]="pokeClass(tipo.type?.name)"
+                  style="margin-bottom: 3px"
+                >
+                  <img
+                    [src]="pokeTypeSVG(tipo.type?.name)"
+                    height="2%"
+                    width="2%"
+                  />
+                </div>
+                <ion-card-subtitle
+                  class="typePokemon"
+                  [style.background-color]="colorType(tipo.type?.name)"
+                >
+                  <div class="ion-text-center">{{tipo.type?.name}}</div>
+                </ion-card-subtitle>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content
+              type="ios"
+              class="ion-text-center"
+              style="padding-bottom: 0"
+            >
+              <div *ngFor="let desc of species">
+                <div class="ion-activatable ripple-parent rounded-rectangle">
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="1">
+                        <ion-icon
+                          style="transform: translateY(85%)"
+                          name="globe"
+                          size="medium"
+                        ></ion-icon>
+                      </ion-col>
+                      <ion-col size="11">
+                        <ion-select
+                          label="Selecciona el lenguaje"
+                          [(ngModel)]="selectedLanguage"
+                          interface="popover"
+                        >
+                          <ion-select-option
+                            [value]="a.language?.name"
+                            *ngFor="let a of desc.genera"
+                          >
+                            {{ a.language?.name }}
+                          </ion-select-option>
+                        </ion-select>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+
+                  <ion-ripple-effect></ion-ripple-effect>
+                </div>
+
+                <ng-container>
+                  <div
+                    *ngFor="let a of desc.genera"
+                    style="margin-top: 3%"
+                  >
+                    <div *ngIf="selectedLanguage === a.language?.name">
+                      <h6 style="margin-bottom: 3%">Descripción:</h6>
+                      <p>{{ a.genus }}</p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid *ngIf="showCardDeafult">
+      <ion-row class="ion-justify-content-center">
+        <ion-col sizeMd="auto">
+          <ion-card class="cardDefault">
+            <img
+              style="border-bottom: 1px solid"
+              alt="Silhouette of mountains"
+              src="../../assets/img/spriteNull.png"
+            />
+            <ion-card-header>
+              <ion-card-title>???</ion-card-title>
+              <ion-card-subtitle>??????????</ion-card-subtitle>
+            </ion-card-header>
+
+            <ion-card-content> ???????????... </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

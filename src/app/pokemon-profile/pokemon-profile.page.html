@@ -1,0 +1,16 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <h5 style="text-transform: capitalize">{{name}}</h5>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <div *ngFor="let poke of pokemon">
+      <p>{{poke|json}}</p>
+    </div>
+  </div>
+</ion-content>

@@ -1,152 +1,77 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { PokeApiServiceService } from '../services/poke-api-service.service';
-import { Option, Result } from '../interfaces/LinkPokemons';
+import { Component, OnInit } from '@angular/core';
 import { Pokemon } from '../interfaces/Pokemon';
+import { PokeApiServiceService } from '../services/poke-api-service.service';
+import { PokemonCharacteristic } from '../interfaces/characteristic';
 import { Preferences } from '@capacitor/preferences';
-import { forkJoin } from 'rxjs';
 import { AlertController } from '@ionic/angular';
-
+import { PokemonSpecies } from '../interfaces/pokemonSpecies';
 @Component({
-  selector: 'app-pokemon',
-  templateUrl: './pokemon.page.html',
-  styleUrls: ['./pokemon.page.scss'],
+  selector: 'app-pokemon-search',
+  templateUrl: './pokemon-search.page.html',
+  styleUrls: ['./pokemon-search.page.scss'],
 })
-export class PokemonPage implements OnInit {
-  constructor(private pokeService: PokeApiServiceService, private alertController: AlertController) {}
+export class PokemonSearchPage implements OnInit {
 
-  public loadedSkeleton = true;
+  constructor(private pokeService: PokeApiServiceService,private alertController: AlertController) { }
 
-  //tostada para el limite de pokemones
+  showCardDeafult: boolean = true;
+
+
   isToastOpen = false;
   setOpen(isOpen: boolean) {
     this.isToastOpen = isOpen;
   }
 
-  limit: number = 10; // Limite de pokemones a mostrar por ionic infinite scroll
-  //capturamos el valor del input para el limite
-   onInputChange(event: any, openToast: boolean) {
-    const newValue = parseInt(event.detail.value, 10);
-    if (!isNaN(newValue) && newValue >= 10 && newValue <= 100) {
-      this.limit = newValue;
-    } else {
-      this.limit = 10;
+  searchText: string = "pikachu";
+  buscarPokemon(openToast: boolean) {
+    if (this.searchText) {
+      this.getPokemonByName(this.searchText);
+      this.showCardDeafult = false;
+    } else if(this.searchText == ""){
       this.setOpen(openToast);
+      this.showCardDeafult = true;
     }
   }
-  //capturamos el valor del range para el limite
-  onRangeChange(event: any) {
-    this.limit = event.detail.value;
-  }
 
-  pokemonLink: Result[] = [];
   pokemon: Pokemon[] = [];
+  species: PokemonSpecies[] = [];
+  getPokemonByName(pokeName: string){
+    this.pokemon = [];
+    this.species = [];
+    this.pokeService.getPokemonByName(pokeName).subscribe((resp:Pokemon) => {
+      this.pokemon.push(resp);
 
-  offset = 0; // Cantidad de Pokémon a saltar
-  loading = false;
-  maxlimit = 11;
-
-  //verifica si hay mas pokemones
-  hasMorePokemon(): boolean {
-    if (this.offset >= this.maxlimit) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  //carga de pokemones por demanda
-  loadMorePokemon(event?: any) {
-    if (this.loading || !this.hasMorePokemon()) {
-      if (event) {
-        event.target.complete();
-      }
-      return;
-    }
-
-    this.loading = true;
-    this.pokeService.getPokemonList(this.limit, this.offset).subscribe(
-      (data: any) => {
-        this.pokemonLink = data.results;
-        //cantidad de pokemones
-        this.maxlimit = data.count;
-
-        const requests = this.pokemonLink.map((pokemon: Result) => {
-          return this.pokeService.getPokemon(pokemon.url);
-        });
-
-        //utilizo ForkJoin para que se ejecuten todas las peticiones al mismo tiempo en paralelo
-        forkJoin(requests).subscribe(
-          (pokemonData: any[]) => {
-            pokemonData.forEach((data: Pokemon) => {
-              let { name, sprites, types, id } = data;
-              this.pokemon.push({ name, sprites, types, id });
-            });
-
-            this.loadedSkeleton = false;
-            this.loading = false;
-            this.offset += this.limit;
-
-            if (this.offset > this.maxlimit) {
-              const diferencia = this.offset - this.maxlimit;
-              this.offset -= diferencia;
-            }
-
-            if (event) {
-              //cuando llegue  a su maximo
-              event.target.complete();
-            }
-          },
-          async (error: any) => {
-            console.log('Error al obtener detalles de los Pokémones: ', error);
-            const alert = await this.alertController.create({
-              header: 'Error',
-              subHeader: 'Algo salió mal',
-              message: 'Error al obtener detalles de los Pokémones',
-              buttons: ['OK'],
-            });
-            await  alert.present();
-            this.loading = false;
-            this.loadedSkeleton = true;
-          }
-        );
+      this.pokeService.getPokemonSpecies(resp.id).subscribe((resp: PokemonSpecies) => {
+        let {genera} = resp;
+        this.species.push({genera});
       },
-      async (error: any) => {
-        console.log('Error al obtener lista de Pokémones: ', error);
+      async (error) => {
+        console.error("No se econtro especies" ,error);
         const alert = await this.alertController.create({
-          header: 'Error',
-          subHeader: 'Algo salió mal',
-          message: 'Error al obtener lista de Pokémones',
+          header: 'Alerta',
+          subHeader: 'No se encontro la descripcion del Pokémon',
+          message: 'No se encontró la descripción de la especie del Pokémon',
           buttons: ['OK'],
-        });
-        await  alert.present();
-        this.loading = false;
-        this.loadedSkeleton = true;
-      }
-    );
+        })
+        await alert.present();
+      });
+
+    },async (error: any) => {
+      console.log('Error al obtener el Pokémon: ', error);
+      this.showCardDeafult = true;
+      const alert = await this.alertController.create({
+        header: 'Alerta',
+        subHeader: 'No se econtro al Pokémon',
+        message: 'verifique si está escrito correctamente el nombre del Pokémon',
+        buttons: ['OK'],
+      });
+      await  alert.present();
+    });
   }
 
-  //Chekamos el modo Dark para guardarlo en LocalStorage ... Preferences por decir es mejor para Dispositivos moviles
-  async checkAppMode() {
-    // const checkIsDarkMode = localStorage.getItem('darkModeActivated');
-    const checkIsDarkMode = await Preferences.get({ key: 'darkModeActivated' });
-    checkIsDarkMode?.value === 'true'
-      ? (this.darkMode = true)
-      : (this.darkMode = false);
-    document.body.classList.toggle('dark', this.darkMode);
-  }
-
-  //cambiamos el modo Dark
-  darkMode: boolean = false;
-  toogleDarkMode() {
-    this.darkMode = !this.darkMode;
-    document.body.classList.toggle('dark', this.darkMode);
-    if (this.darkMode) {
-      Preferences.set({ key: 'darkModeActivated', value: 'true' });
-      // localStorage.setItem('darkModeActivated', 'true');
-    } else {
-      // localStorage.setItem('darkModeActivated', 'false');
-      Preferences.set({ key: 'darkModeActivated', value: 'false' });
-    }
+  selectedLanguage: string|undefined = 'es'; // Idioma predeterminado
+  setSelectedLanguage(language: string |undefined) {
+    this.selectedLanguage = language;
   }
 
 
@@ -297,8 +222,19 @@ export class PokemonPage implements OnInit {
 
   }
 
+  darkMode: boolean = false;
+  //Chekamos el modo Dark para guardarlo en LocalStorage ... Preferences por decir es mejor para Dispositivos moviles
+  async checkAppMode() {
+    // const checkIsDarkMode = localStorage.getItem('darkModeActivated');
+    const checkIsDarkMode = await Preferences.get({ key: 'darkModeActivated' });
+    checkIsDarkMode?.value === 'true'
+      ? (this.darkMode = true)
+      : (this.darkMode = false);
+    document.body.classList.toggle('dark', this.darkMode);
+  }
+
   ngOnInit() {
     this.checkAppMode();
-    this.loadMorePokemon();
   }
+
 }

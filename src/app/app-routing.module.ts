@@ -14,6 +14,14 @@ const routes: Routes = [
   {
     path: 'pokemon',
     loadChildren: () => import('./pokemon/pokemon.module').then( m => m.PokemonPageModule)
+  },
+  {
+    path: 'pokemon-profile/:id',
+    loadChildren: () => import('./pokemon-profile/pokemon-profile.module').then( m => m.PokemonProfilePageModule)
+  },
+  {
+    path: 'pokemon-search',
+    loadChildren: () => import('./pokemon-search/pokemon-search.module').then( m => m.PokemonSearchPageModule)
   }
 ];
 
