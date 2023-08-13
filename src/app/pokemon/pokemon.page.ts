@@ -125,15 +125,7 @@ export class PokemonPage implements OnInit {
     );
   }
 
-  //Chekamos el modo Dark para guardarlo en LocalStorage ... Preferences por decir es mejor para Dispositivos moviles
-  async checkAppMode() {
-    // const checkIsDarkMode = localStorage.getItem('darkModeActivated');
-    const checkIsDarkMode = await Preferences.get({ key: 'darkModeActivated' });
-    checkIsDarkMode?.value === 'true'
-      ? (this.darkMode = true)
-      : (this.darkMode = false);
-    document.body.classList.toggle('dark', this.darkMode);
-  }
+
 
   //cambiamos el modo Dark
   darkMode: boolean = false;
@@ -149,6 +141,15 @@ export class PokemonPage implements OnInit {
     }
   }
 
+  //Chekamos el modo Dark para guardarlo en LocalStorage ... Preferences por decir es mejor para Dispositivos moviles
+  async checkAppMode() {
+    // const checkIsDarkMode = localStorage.getItem('darkModeActivated');
+    const checkIsDarkMode = await Preferences.get({ key: 'darkModeActivated' });
+    checkIsDarkMode?.value === 'true'
+      ? (this.darkMode = true)
+      : (this.darkMode = false);
+    document.body.classList.toggle('dark', this.darkMode);
+  }
 
    //color dependiendo del tipo de pokemon
    colorType(type: any): string {

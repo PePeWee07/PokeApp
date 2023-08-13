@@ -32,6 +32,10 @@ export class PokeApiServiceService {
     return this.http.get(environment.URL + `pokemon-species/${id}`);
   }
 
+  getPokemonAbility(id: number | string |undefined) {
+    return this.http.get(environment.URL + `ability/${id}`);
+  }
+
 
 
 

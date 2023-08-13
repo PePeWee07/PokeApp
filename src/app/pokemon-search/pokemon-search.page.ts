@@ -22,16 +22,24 @@ export class PokemonSearchPage implements OnInit {
     this.isToastOpen = isOpen;
   }
 
-  searchText: string = "pikachu";
-  buscarPokemon(openToast: boolean) {
-    if (this.searchText) {
-      this.getPokemonByName(this.searchText);
+
+  private searchTimeout: any; // Variable para almacenar el temporizador
+
+handleInput(event: any, openToast: boolean) {
+  clearTimeout(this.searchTimeout); // Limpiar el temporizador anterior
+  const query = event.target.value.toLowerCase();
+  this.searchTimeout = setTimeout(() => {
+    console.log(query);
+    if (query) {
+      this.getPokemonByName(query);
       this.showCardDeafult = false;
-    } else if(this.searchText == ""){
+    } else {
       this.setOpen(openToast);
       this.showCardDeafult = true;
     }
-  }
+  }, 500); // Establecer un retraso
+}
+
 
   pokemon: Pokemon[] = [];
   species: PokemonSpecies[] = [];

@@ -9,8 +9,302 @@
 
 <ion-content [fullscreen]="true">
   <div class="container">
-    <div *ngFor="let poke of pokemon">
-      <p>{{poke|json}}</p>
-    </div>
+    <ion-grid>
+      <ion-row
+        style="display: flex; justify-content: center"
+        class="ion-justify-content-center"
+      >
+        <ion-col size="auto" *ngFor="let poke of pokemon">
+          <ion-card
+            color="light"
+            [style]="borderCardPokemon(poke.types)"
+            class="card-equal-height"
+          >
+            <ion-card-header>
+              <ion-card-title
+                ><h5 style="text-transform: capitalize; text-align: center">
+                  {{poke.name}}
+                </h5></ion-card-title
+              >
+              <div *ngFor="let tipo of poke.types">
+                <div
+                  class="icon"
+                  [class]="pokeClass(tipo.type?.name)"
+                  style="margin-bottom: 3px"
+                >
+                  <img
+                    [src]="pokeTypeSVG(tipo.type?.name)"
+                    height="2%"
+                    width="2%"
+                  />
+                </div>
+                <ion-card-subtitle
+                  class="typePokemon ion-text-center"
+                  [style.background-color]="colorType(tipo.type?.name)"
+                >
+                  {{tipo.type?.name}}
+                </ion-card-subtitle>
+              </div>
+            </ion-card-header>
+            <ion-card-content>
+              <img
+                *ngIf="poke.sprites?.front_default; else defaultImage"
+                [src]="poke.sprites?.front_default"
+                [alt]="poke.name"
+                [routerLink]="['/pokemon-profile/' + poke.id]"
+              />
+            </ion-card-content>
+
+            <ng-template #defaultImage>
+              <img
+                src="../../assets/img/spriteNull.png"
+                alt="Imagen por defecto"
+              />
+            </ng-template>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12">
+
+          <div class="ion-padding">
+
+          <ion-accordion-group>
+            <ion-accordion value="first" style="border-radius: 10px;">
+              <ion-item slot="header" color="light">
+                <ion-label>Habilidades del Pokémon</ion-label>
+              </ion-item>
+              <div slot="content">
+
+                <div>
+                  <ion-text color="tertiary" mode="ios">
+                    <h3>Habilidades</h3>
+                  </ion-text>
+                  <ion-accordion-group>
+                    <ion-accordion style="border-radius: 3px;" class="pokeabilties" *ngFor="let a of abilities">
+                      <ion-item slot="header" color="light">
+                        <ion-label>{{a.ability?.name}}</ion-label>
+                      </ion-item>
+                      <div class="ion-padding" slot="content">
+                        <ion-item>
+                          <ion-label>
+                            <h6>Habilidad Oculta: </h6>
+                            <p>{{isAbilityOcult(a.is_hidden!)}}</p>
+                          </ion-label>
+                          <ion-label>
+                            <h6>Slot de Habilidad: </h6>
+                            <p>{{a.slot}}</p>
+                          </ion-label>
+                        </ion-item>
+                      </div>
+                    </ion-accordion>
+                  </ion-accordion-group>
+                </div>
+
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="12">
+                      <ion-card class="card-equal-height">
+                        <div
+                          style="
+                            text-align: right;
+                            margin-top: 5px;
+                            margin-right: 5px;
+                          "
+                        >
+                          <ion-icon
+                            size="large"
+                            color="tertiary"
+                            name="globe"
+                            [class.enlarged]="viewIdiomaAbility"
+                            (click)="viewIodmaAbilityPokemon()"
+                          ></ion-icon>
+                        </div>
+                        <ion-card-header style="padding-top: 0">
+                          <ion-text
+                            class="ion-text-center"
+                            color="tertiary"
+                            mode="ios"
+                          >
+                            <h6>Efecto de Habilidades</h6>
+                          </ion-text>
+                        </ion-card-header>
+                        <ion-card-content>
+                          <div *ngFor="let abi of ability; let i=index">
+                            <ion-select
+                              [label]="abi.name"
+                              [(ngModel)]="selectedLanguages[abi.name!]"
+                              interface="popover"
+                            >
+                              <ion-select-option
+                                *ngFor="let efect of abi.effect_entries"
+                                [value]="efect.language?.name!"
+                              >
+                                {{ efect.language?.name! }}
+                              </ion-select-option>
+                            </ion-select>
+
+                            <div
+                              *ngFor="let short of abi.effect_entries"
+                              style="margin-top: 3%"
+                            >
+                              <div
+                                class="ion-padding-bottom"
+                                *ngIf="selectedLanguages[abi.name!] === short.language?.name"
+                              >
+                                <p>{{ short.short_effect }}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </ion-card-content>
+                      </ion-card>
+                    </ion-col>
+                    <ion-col size="12" *ngIf="viewIdiomaAbility">
+                      <ion-card class="card-equal-height">
+                        <div
+                          style="
+                            text-align: right;
+                            margin-top: 5px;
+                            margin-right: 5px;
+                          "
+                        >
+                          <ion-icon
+                            size="large"
+                            color="tertiary"
+                            name="close-circle-outline"
+                            [class.enlarged]="viewIdiomaAbility"
+                            (click)="viewIodmaAbilityPokemon()"
+                          ></ion-icon>
+                        </div>
+                        <ion-card-header style="padding-top: 0">
+                          <ion-text
+                            class="ion-text-center"
+                            color="tertiary"
+                            mode="ios"
+                          >
+                            <h6>
+                              Nombre habilidad
+                              <ion-icon name="globe"></ion-icon>
+                            </h6>
+                          </ion-text>
+                        </ion-card-header>
+                        <ion-card-content>
+                          <div *ngFor="let ab of ability">
+                            <ion-select
+                              [label]="ab.name"
+                              [(ngModel)]="selectedLanguageName[ab.name!]"
+                              interface="popover"
+                            >
+                              <ion-select-option
+                                *ngFor="let idioma of ab.names"
+                                [value]="idioma.language?.name"
+                              >
+                                {{ idioma.language?.name }}
+                              </ion-select-option>
+                            </ion-select>
+
+                            <div *ngFor="let idioma of ab.names">
+                              <div
+                                *ngIf="selectedLanguageName[ab.name!] === idioma.language?.name"
+                              >
+                                <p>{{ idioma.name }}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </ion-card-content>
+                      </ion-card>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+
+              </div>
+            </ion-accordion>
+          </ion-accordion-group>
+
+          </div>
+
+        </ion-col>
+        <ion-col size="12">
+          <ion-text class="ion-text-center" color="tertiary" mode="ios">
+            <h4>Pokémones con habilidades similares</h4>
+          </ion-text>
+          <div *ngFor="let pokesimi of abilitySimilar">
+            <ion-text class="ion-text-center" color="tertiary" mode="ios">
+              <h4 style="text-transform: capitalize">
+                {{pokesimi.abilityName}}
+              </h4>
+            </ion-text>
+            <swiper-container
+              #swiper
+              effect="cards"
+              (slidechange)="swiperSlideChanged($event)"
+              [initialSlide]="0"
+              [centeredSlides]="true"
+              [loop]="false"
+              [zoom]="true"
+              navigation="true"
+              [pagination]="{clickable: true, dynamicBullets: true}"
+            >
+              <swiper-slide
+                *ngFor="let poke of pokesimi.pokemons"
+                style="display: flex; justify-content: center"
+              >
+                <ion-card
+                  color="light"
+                  [style]="borderCardPokemon(poke.types)"
+                  class="card-slider"
+                >
+                  <ion-card-header>
+                    <ion-card-title
+                      ><h5
+                        style="text-transform: capitalize; text-align: center"
+                      >
+                        {{poke.name}}
+                      </h5></ion-card-title
+                    >
+                    <div *ngFor="let tipo of poke.types">
+                      <div
+                        class="icon"
+                        [class]="pokeClass(tipo.type?.name)"
+                        style="margin-bottom: 3px"
+                      >
+                        <img
+                          [src]="pokeTypeSVG(tipo.type?.name)"
+                          height="2%"
+                          width="2%"
+                        />
+                      </div>
+                      <ion-card-subtitle
+                        class="typePokemon ion-text-center"
+                        [style.background-color]="colorType(tipo.type?.name)"
+                      >
+                        {{tipo.type?.name}}
+                      </ion-card-subtitle>
+                    </div>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <img
+                      *ngIf="poke.sprites?.front_default; else defaultImage"
+                      [src]="poke.sprites?.front_default"
+                      [alt]="poke.name"
+                      [routerLink]="['/pokemon-profile/' + poke.id]"
+                    />
+                  </ion-card-content>
+
+                  <ng-template #defaultImage>
+                    <img
+                      src="../../assets/img/spriteNull.png"
+                      alt="Imagen por defecto"
+                      [routerLink]="['/pokemon-profile/' + poke.id]"
+                    />
+                  </ng-template>
+                </ion-card>
+              </swiper-slide>
+            </swiper-container>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 </ion-content>

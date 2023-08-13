@@ -8,7 +8,23 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-item>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Buscador de Pokemon</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-searchbar placeholder="Nombre de Pokémon ejm:(bulbasaur)" (ionInput)="handleInput($event, true)">
+      </ion-searchbar>
+    </ion-toolbar>
+    <ion-toast
+      [isOpen]="isToastOpen"
+      message="Ingrese un nombre en el campo de busqueda"
+      [duration]="2000"
+      (didDismiss)="handleInput($event,false)"
+    ></ion-toast>
+  </ion-header>
+
+  <!-- <ion-item>
     <ion-icon name="search"></ion-icon>
     <ion-input
       label="Buscar: "
@@ -30,7 +46,7 @@
       [duration]="2000"
       (didDismiss)="buscarPokemon(false)"
     ></ion-toast>
-  </ion-item>
+  </ion-item> -->
 
   <div class="container" class="ion-margin-top">
     <ion-grid *ngIf="!showCardDeafult">
