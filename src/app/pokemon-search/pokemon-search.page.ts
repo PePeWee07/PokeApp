@@ -12,7 +12,7 @@ import { PokemonSpecies } from '../interfaces/pokemonSpecies';
 })
 export class PokemonSearchPage implements OnInit {
 
-  constructor(private pokeService: PokeApiServiceService,private alertController: AlertController) { }
+  constructor(private pokeService: PokeApiServiceService, private alertController: AlertController) { }
 
   showCardDeafult: boolean = true;
 
@@ -37,7 +37,7 @@ handleInput(event: any, openToast: boolean) {
       this.setOpen(openToast);
       this.showCardDeafult = true;
     }
-  }, 500); // Establecer un retraso
+  }, 1500); // Establecer un retraso
 }
 
 

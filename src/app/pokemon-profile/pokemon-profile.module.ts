@@ -8,13 +8,25 @@ import { PokemonProfilePageRoutingModule } from './pokemon-profile-routing.modul
 
 import { PokemonProfilePage } from './pokemon-profile.page';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+// echarts - lib: https://github.com/xieziyu/ngx-echarts
+import { NgxEchartsModule } from 'ngx-echarts';
+
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PokemonProfilePageRoutingModule
+    PokemonProfilePageRoutingModule,
+    NgxEchartsModule.forRoot({
+      /**
+       * This will import all modules from echarts.
+       * If you only need custom modules,
+       * please refer to [Custom Build] section.
+       */
+      echarts: () => import('echarts'),
+    }),
   ],
   declarations: [PokemonProfilePage]
 })

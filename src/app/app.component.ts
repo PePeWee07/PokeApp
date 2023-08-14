@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent {
   public appPages = [
     { title: 'Inicio', url: '/folder/inbox', icon: 'home' },
-    { title: 'Pokedex', url: '/pokemon', icon: 'egg' },
+    { title: 'Pokémones', url: '/pokemon', icon: 'egg' },
     { title: 'Búsqueda de Pokémon', url: '/pokemon-search', icon: 'search' },
     // { title: 'Archived', url: '/folder/archived', icon: 'archive' },
     // { title: 'Trash', url: '/folder/trash', icon: 'trash' },

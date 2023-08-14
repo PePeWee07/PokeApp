@@ -127,7 +127,7 @@
                 </ion-card-subtitle>
               </div>
             </ion-card-header>
-            <ion-card-content>
+            <ion-card-content style="display: flex; justify-content: center;">
               <img
                 *ngIf="poke.sprites?.front_default; else defaultImage"
                 [src]="poke.sprites?.front_default"
@@ -137,7 +137,7 @@
             </ion-card-content>
 
             <ng-template #defaultImage>
-              <img
+              <img  style="height: 90px; width: 90px;"
                 src="../../assets/img/spriteNull.png"
                 alt="Imagen por defecto"
               />

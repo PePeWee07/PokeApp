@@ -1,12 +1,15 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Ability, Pokemon } from '../interfaces/Pokemon';
+import { Ability, Pokemon, Stat } from '../interfaces/Pokemon';
 import { PokeApiServiceService } from '../services/poke-api-service.service';
 import { Preferences } from '@capacitor/preferences';
 import { AbilitysPokemon } from '../interfaces/AbilitysPokemon';
 import { forkJoin } from 'rxjs';
-import { IonicSlides } from '@ionic/angular';
+import { AlertController, IonicSlides } from '@ionic/angular';
 import { MyObjectSimilarAbilities } from '../interfaces/myModels/similarAbilities';
+
+import { ECharts, EChartsOption } from 'echarts';
+// import { CHART_LABELS } from '../charts-data';
 
 @Component({
   selector: 'app-pokemon-profile',
@@ -15,13 +18,27 @@ import { MyObjectSimilarAbilities } from '../interfaces/myModels/similarAbilitie
 })
 export class PokemonProfilePage implements OnInit  {
 
-  constructor(private idRoute: ActivatedRoute, private pokeService:  PokeApiServiceService) { }
+  constructor(private idRoute: ActivatedRoute, private pokeService: PokeApiServiceService, private alertController: AlertController) {
+
+  }
+
+  //Options Ngx-ECharts --->
+  option: EChartsOption = {}
+
+  echartsInstance!: ECharts;
+   onChartInit(chart: ECharts) {
+    this.echartsInstance = chart;
+  }
+  //<-----
+
+
 
   pokemon: Pokemon[] = [];
   abilities: Ability[] = []; //Habilidades del pokemon
   ability: AbilitysPokemon[] = []; //Descripcio de habilidad del pokemon
   abilitySimilar: MyObjectSimilarAbilities[] = [];
-  name: string | undefined = "Pokemon name";
+  statsData: any[] = []; //no compatible con la ionterfaz Stast por undefined cambiarla si desear usarla
+  name: any  = "Pokemon name";
 
   getPokemon(){
     const idPokemon = Number(this.idRoute.snapshot.paramMap.get('id'));
@@ -31,11 +48,93 @@ export class PokemonProfilePage implements OnInit  {
 
       //Link o nombre de la habilidad a  CONSUMIR
       this.abilities.push(...resp.abilities!);
+      this.statsData.push(...resp.stats!);
 
+
+      //Configuración de los datos para el gráfico de radar Ngx-ECharts
+      const indicatorData = this.statsData.map(stat => {
+        return {
+          name: this.transformtext(stat.stat?.name), // Nombre del stat
+          max: 255, // Valor máximo para el indicador
+          min: 0 // Valor mínimo para el indicador
+        };
+      });
+
+      const seriesData = [
+        {
+          value: this.statsData.map(stat => stat.base_stat), // Valores de los base_stats
+          name: this.name,
+          areaStyle: {
+            color: 'rgba(64, 224, 208, 0.7)'
+          },
+          symbol: 'circle',
+          symbolSize: 5,
+          label: {
+            show: false,
+            formatter: function (params:any) {
+              return params.value;
+            }
+          }
+        }
+      ];
+
+      this.option = {
+        // title: {
+        //   text: 'Estadísticas base'
+        // },
+        // legend: {
+        //   data: [this.name]
+        // },
+        radar: {
+          indicator: indicatorData,
+          center: ['50%', '50%'],
+          radius: 120,
+          axisName: {
+            // formatter: '【{value}】',
+            backgroundColor: '#222428',
+            borderRadius: 3,
+            padding: [3, 5],
+            color: '#ffffff'
+          },
+          splitArea: {
+            areaStyle: {
+              color: ['#ccf3412c', '#ccf3412c', '#f3bb412c', '#ccf3412c, #f35c412c', '#f35c412c', '#f3bb412c', '#ccf3412c'],
+              shadowColor: 'rgba(255, 255, 255, 0.8)',
+              shadowBlur: 10
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.3)'
+            }
+          },
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(211, 253, 250, 0.5)'
+            }
+          }
+        },
+        series: [
+          {
+            type: 'radar',
+            emphasis: {
+              lineStyle: {
+                width: 2.5
+              }
+            },
+            //alguna propiedades se ecuentran dentro al traer seriesData
+            data: seriesData,
+            lineStyle: {
+              type: 'solid'
+            },
+          }
+        ]
+      };
+
+      //Consumo de la habilidadades similiares de pokemones
       const requestAbilitys = this.abilities.map((ability: Ability) => {
         return this.pokeService.getPokemonAbility(ability.ability?.name);
       });
-
 
       forkJoin(requestAbilitys).subscribe(
         (resp: AbilitysPokemon[]) => {
@@ -53,8 +152,16 @@ export class PokemonProfilePage implements OnInit  {
             this.pokeService.getPokemonByName(name).subscribe((resp: Pokemon) => {
               let { id, name, sprites, types } = resp;
               similarPokemons.push({ id, name, sprites, types });
-            }, error => {
+            },
+            async (error) => {
               console.log("Error-getPokemonByName-forAbilities: ", error);
+              const alert = await this.alertController.create({
+                header: 'Alerta',
+                subHeader: 'No se encontro el Pokémon',
+                message: 'No se pudo traer el Pokémon para ver la habilidad similar',
+                buttons: ['OK'],
+              })
+              await alert.present();
             });
           });
 
@@ -65,16 +172,30 @@ export class PokemonProfilePage implements OnInit  {
           });
         });
 
-          console.log("abilitySimilar: ", this.abilitySimilar);
-
-      }, error => {
+      },
+      async (error) => {
         console.log("Error-getPokemonAbility: ", error);
+        const alert = await this.alertController.create({
+          header: 'Alerta',
+          subHeader: 'No se encontro la habilidad',
+          message: 'No se pudo traer la habilidad del Pokémon',
+          buttons: ['OK'],
+        })
+        await alert.present();
       });
 
-    }, error => {
-      console.log("Error-getPokemonById: ", error);
-    }
-    );
+    },
+    async (error) => {
+      console.error("No se econtro el Pokémon " ,error);
+      const alert = await this.alertController.create({
+        header: 'Alerta',
+        subHeader: 'No se encontro el Pokémon',
+        message: 'No se pudo traer el Pokémon',
+        buttons: ['OK'],
+      })
+      await alert.present();
+    });
+
   }
 
   darkMode: boolean = false;
@@ -258,6 +379,51 @@ setSelectedLanguage(abilityName: string, language: string | undefined) {
     }else{
       return "No";
     }
+  }
+
+  //Separo numero de peso
+  convertWeight(p:number){
+    if(String(p).length == 1){
+      // si solo tiene un numero
+      return '0,' + String(p) + " Cm"
+    }else {
+      // varios numeros
+      // agg una coma + capturo el ultmio digito
+        let x = ',' + String(p).substr(-1) //,5
+      // elimino el ultimo caracter
+        let z = String(p).substring(0, String(p).length - 1);
+        return z + x + " M"
+    }
+  }
+
+  //Separo numero de alto
+  convertHeight(h:number){
+    if(String(h).length == 1){
+       return '0,' + String(h) + " g"
+    }else{
+      // varios numeros
+      // agg una coma + capturo el ultmio digito
+      let x = ',' + String(h).substr(-1) //,5
+      // elimino el ultimo caracter
+        let z = String(h).substring(0, String(h).length - 1);
+        return  z + x + " Kg"
+    }
+  }
+
+   transformtext(str: string): string {
+    if (str === undefined) {
+      return "Null";
+    } else if (str === null) {
+      return "Null";
+    } else if (str.length === 0) {
+      return "Null";
+    } else if (str === "special-defense") {
+      return "Sp. Def";
+    } else if (str === "special-attack") {
+      return "Sp. Atk";
+    }
+
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   //slider de SWIPER... por si quiero ejecutar algo cuando cambie de slide

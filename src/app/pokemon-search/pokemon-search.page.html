@@ -24,30 +24,6 @@
     ></ion-toast>
   </ion-header>
 
-  <!-- <ion-item>
-    <ion-icon name="search"></ion-icon>
-    <ion-input
-      label="Buscar: "
-      [(ngModel)]="searchText"
-      labelPlacement="floating"
-      placeholder="Nombre de Pokémon ejm:(bulbasaur)"
-    >
-    </ion-input>
-    <ion-button
-      size="small"
-      color="light"
-      slot="end"
-      (click)="buscarPokemon(true)"
-      >Buscar</ion-button
-    >
-    <ion-toast
-      [isOpen]="isToastOpen"
-      message="Ingrese un nombre en el campo de busqueda"
-      [duration]="2000"
-      (didDismiss)="buscarPokemon(false)"
-    ></ion-toast>
-  </ion-item> -->
-
   <div class="container" class="ion-margin-top">
     <ion-grid *ngIf="!showCardDeafult">
       <ion-row class="ion-justify-content-center">
@@ -57,7 +33,7 @@
             *ngFor="let poke of pokemon"
             [style]="borderCardPokemon(poke.types)"
           >
-            <div class="pokemonSpirte">
+            <div class="pokemonSpirte" style="display: flex; justify-content: center;">
               <ion-avatar [routerLink]="['/pokemon-profile/' + poke.id]">
                 <img [src]="poke.sprites?.front_default" />
               </ion-avatar>

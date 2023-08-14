@@ -46,7 +46,7 @@
                 </ion-card-subtitle>
               </div>
             </ion-card-header>
-            <ion-card-content>
+            <ion-card-content style="display: flex; justify-content: center;">
               <img
                 *ngIf="poke.sprites?.front_default; else defaultImage"
                 [src]="poke.sprites?.front_default"
@@ -56,19 +56,60 @@
             </ion-card-content>
 
             <ng-template #defaultImage>
-              <img
+              <img style="height: 90px; width: 90px;"
                 src="../../assets/img/spriteNull.png"
                 alt="Imagen por defecto"
               />
             </ng-template>
           </ion-card>
+          <ion-item class="ion-text-center ion-margin-bottom">
+            <ion-label>
+              <h6>Altura: </h6>
+              <p>{{convertWeight(poke.height!)}}</p>
+            </ion-label>
+            <ion-label>
+              <h6>Peso: </h6>
+              <p>{{convertHeight(poke.weight!)}}</p>
+            </ion-label>
+          </ion-item>
         </ion-col>
       </ion-row>
 
-      <ion-row>
+      <ion-row class="ion-justify-content-center">
+
+        <ion-col size="12" style="margin-top: 10%;">
+          <div class="polar-grap">
+            <ion-text class="ion-text-center" mode="ios" color="tertiary">
+              <h3 style="margin-bottom: 0;">Estadísticas base</h3>
+            </ion-text>
+            <div style="height: 70%;" echarts [options]="option"  (chartInit)="onChartInit($event)"></div>
+          </div>
+
+          <div class="ion-padding-inline" style="margin-top: -12%; margin-bottom: 0;">
+            <ion-accordion-group>
+              <ion-accordion value="first" style="border-radius: 10px;">
+                <ion-item slot="header" color="light">
+                  <ion-label>Estadísticas base</ion-label>
+                </ion-item>
+                <div slot="content" class="ion-padding ion-text-center">
+                  <div *ngFor="let poke of pokemon">
+                    <div *ngFor="let st of poke.stats">
+                      <ion-text color="tertiary">
+                        <h6 style="display: inline-block;">{{transformtext(st.stat?.name!)}}:</h6>
+                      </ion-text>
+                      <h6 style="display: inline-block;">{{st.base_stat}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </div>
+
+        </ion-col>
+
         <ion-col size="12">
 
-          <div class="ion-padding">
+          <div class="ion-padding-inline">
 
           <ion-accordion-group>
             <ion-accordion value="first" style="border-radius: 10px;">
@@ -79,7 +120,7 @@
 
                 <div>
                   <ion-text color="tertiary" mode="ios">
-                    <h3>Habilidades</h3>
+                    <h3 style="margin-left: 5px;">Habilidades</h3>
                   </ion-text>
                   <ion-accordion-group>
                     <ion-accordion style="border-radius: 3px;" class="pokeabilties" *ngFor="let a of abilities">
@@ -127,12 +168,13 @@
                             color="tertiary"
                             mode="ios"
                           >
-                            <h6>Efecto de Habilidades</h6>
+                            <h6 style="margin-block: 0;">Efecto de Habilidades</h6>
                           </ion-text>
                         </ion-card-header>
-                        <ion-card-content>
-                          <div *ngFor="let abi of ability; let i=index">
-                            <ion-select
+                        <ion-card-content style="display: flex; justify-content: center;">
+                          <ion-row class="ion-justify-content-center">
+                            <ion-col size="6" *ngFor="let abi of ability; let i=index">
+                              <ion-select
                               [label]="abi.name"
                               [(ngModel)]="selectedLanguages[abi.name!]"
                               interface="popover"
@@ -156,7 +198,8 @@
                                 <p>{{ short.short_effect }}</p>
                               </div>
                             </div>
-                          </div>
+                            </ion-col>
+                          </ion-row>
                         </ion-card-content>
                       </ion-card>
                     </ion-col>
@@ -283,7 +326,7 @@
                       </ion-card-subtitle>
                     </div>
                   </ion-card-header>
-                  <ion-card-content>
+                  <ion-card-content style="display: flex; justify-content: center;">
                     <img
                       *ngIf="poke.sprites?.front_default; else defaultImage"
                       [src]="poke.sprites?.front_default"
@@ -293,7 +336,7 @@
                   </ion-card-content>
 
                   <ng-template #defaultImage>
-                    <img
+                    <img  style="height: 90px; width: 90px;"
                       src="../../assets/img/spriteNull.png"
                       alt="Imagen por defecto"
                       [routerLink]="['/pokemon-profile/' + poke.id]"
