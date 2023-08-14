@@ -1,5 +1,11 @@
-EN
-pokemon-species
+Agregar lista de movientos al perfil de pokemon
+Agreagar lista de Held_items que puede usar al perfil de pokemon
+Cargar los diferentes sprites al perfil de pokemon
+
+---- Descargar de GitHub: {{ 3D Animations }}
+
+
+Para pokemonProfile consumiendo de (pokemon-species)
 {
 
 --------REPETIDO LOS IDIOMAS "es"-----------
@@ -14,7 +20,7 @@ pokemon-species
           "name": "x",
           "url": "https://pokeapi.co/api/v2/version/23/"
         }
-      },
+    }
   ]
 
 

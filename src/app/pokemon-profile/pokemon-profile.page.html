@@ -336,15 +336,11 @@
             <h1>Cadena de evolución</h1>
           </ion-text>
           <swiper-container
-              #swiper
               effect="coverflow"
               [slidesPerView]="2.3"
-              (slidechange)="swiperSlideChanged($event)"
               [initialSlide]="1"
               [centeredSlides]="true"
               [autoplay]="true"
-              [loop]="false"
-              [zoom]="true"
               navigation="true"
               [pagination]="{clickable: true, dynamicBullets: true}"
             >
@@ -417,11 +413,8 @@
               </h4>
             </ion-text>
             <swiper-container
-              #swiper
               effect="cards"
-              (slidechange)="swiperSlideChanged($event)"
               [centeredSlides]="true"
-              [zoom]="true"
               navigation="true"
               [pagination]="{clickable: true, dynamicBullets: true}"
             >
