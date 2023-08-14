@@ -74,18 +74,30 @@
             </ion-card-header>
             <ion-card-content style="display: flex; justify-content: center;">
               <img
-                *ngIf="poke.sprites?.front_default; else defaultImage"
+                *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
                 [src]="poke.sprites?.front_default"
                 [alt]="poke.name"
                 [routerLink]="['/pokemon-profile/' + poke.id]"
               />
             </ion-card-content>
 
-            <ng-template #defaultImage>
-              <img style="height: 90px; width: 90px;"
-                src="../../assets/img/spriteNull.png"
-                alt="Imagen por defecto"
-              />
+            <ng-template #condition1ElseBlock>
+              <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
+                <div style="display: flex; justify-content: center;">
+                  <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                    [src]="poke.sprites?.other?.['official-artwork']?.front_default"
+                    alt="Imagen por defecto"
+                  />
+                </div>
+              </div>
+              <ng-template #condition2ElseBlock>
+                <div style="display: flex; justify-content: center;">
+                  <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                    src="../../assets/img/spriteNull.png"
+                    alt="Imagen por defecto"
+                  />
+                </div>
+              </ng-template>
             </ng-template>
           </ion-card>
 
@@ -383,19 +395,30 @@
                   </ion-card-header>
                   <ion-card-content style="display: flex; justify-content: center;">
                     <img
-                      *ngIf="poke.sprites?.front_default; else defaultImage"
+                      *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
                       [src]="poke.sprites?.front_default"
                       [alt]="poke.name"
                       [routerLink]="['/pokemon-profile/' + poke.id]"
                     />
                   </ion-card-content>
 
-                  <ng-template #defaultImage>
-                    <img  style="height: 90px; width: 90px;"
-                      src="../../assets/img/spriteNull.png"
-                      alt="Imagen por defecto"
-                      [routerLink]="['/pokemon-profile/' + poke.id]"
-                    />
+                  <ng-template #condition1ElseBlock>
+                    <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
+                      <div style="display: flex; justify-content: center;">
+                        <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                          [src]="poke.sprites?.other?.['official-artwork']?.front_default"
+                          alt="Imagen por defecto"
+                        />
+                      </div>
+                    </div>
+                    <ng-template #condition2ElseBlock>
+                      <div style="display: flex; justify-content: center;">
+                        <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                          src="../../assets/img/spriteNull.png"
+                          alt="Imagen por defecto"
+                        />
+                      </div>
+                    </ng-template>
                   </ng-template>
                 </ion-card>
               </swiper-slide>
@@ -457,19 +480,30 @@
                   </ion-card-header>
                   <ion-card-content style="display: flex; justify-content: center;">
                     <img
-                      *ngIf="poke.sprites?.front_default; else defaultImage"
+                      *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
                       [src]="poke.sprites?.front_default"
                       [alt]="poke.name"
                       [routerLink]="['/pokemon-profile/' + poke.id]"
                     />
                   </ion-card-content>
 
-                  <ng-template #defaultImage>
-                    <img  style="height: 90px; width: 90px;"
-                      src="../../assets/img/spriteNull.png"
-                      alt="Imagen por defecto"
-                      [routerLink]="['/pokemon-profile/' + poke.id]"
-                    />
+                  <ng-template #condition1ElseBlock>
+                    <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
+                      <div style="display: flex; justify-content: center;">
+                        <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                          [src]="poke.sprites?.other?.['official-artwork']?.front_default"
+                          alt="Imagen por defecto"
+                        />
+                      </div>
+                    </div>
+                    <ng-template #condition2ElseBlock>
+                      <div style="display: flex; justify-content: center;">
+                        <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                          src="../../assets/img/spriteNull.png"
+                          alt="Imagen por defecto"
+                        />
+                      </div>
+                    </ng-template>
                   </ng-template>
                 </ion-card>
               </swiper-slide>

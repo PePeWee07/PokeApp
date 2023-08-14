@@ -83,6 +83,16 @@ handleInput(event: any, openToast: boolean) {
   }
 
 
+  srcPokemonSprite(sprite: any){
+    const spriteNull = "../../assets/img/spriteNull.png";
+
+    if(sprite == null){
+      return "poke.sprites?.other?.official_artwork?.front_default";
+    }
+
+    return sprite;
+  }
+
    //color dependiendo del tipo de pokemon
    colorType(type: any): string {
     const typeColors: Record<string, string> = {

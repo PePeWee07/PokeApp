@@ -591,6 +591,7 @@ setSelectedLanguage(abilityName: string, language: string | undefined) {
     }
   }
 
+
   //slider de SWIPER... por si quiero ejecutar algo cuando cambie de slide
   @Input() slides: any[] = [];
   swiperModules = [IonicSlides];
@@ -602,6 +603,7 @@ setSelectedLanguage(abilityName: string, language: string | undefined) {
     // console.log(this.swiperRef?.nativeElement.swiper.activeIndex);//idice actual
     // console.log('changed: ', e);
   }
+
 
   ngOnInit() {
     this.getPokemon();
