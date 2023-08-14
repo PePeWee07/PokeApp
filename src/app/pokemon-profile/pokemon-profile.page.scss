@@ -144,15 +144,22 @@
 .card-slider{
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 270px;
+ }
+
+ .card-equal-height-habilities{
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  height: 80%;
  }
 
 .card-equal-height {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 80%;
+  height: 70%;
 
 
   transform: rotateY(0deg) rotateX(5deg) translateX(0%) translateZ(0px);

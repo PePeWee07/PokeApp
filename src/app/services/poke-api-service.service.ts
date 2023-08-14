@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { PokemonCharacteristic } from '../interfaces/characteristic';
 import { Observable, catchError, throwError } from 'rxjs';
+import { PokemonSpecies } from '../interfaces/pokemonSpecies';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class PokeApiServiceService {
     return this.http.get(environment.URL + `pokemon/${name}`);
   }
 
-  getPokemonSpecies(id: number | undefined) {
+  getPokemonSpecies(id: number | undefined | string) {
     return this.http.get(environment.URL + `pokemon-species/${id}`);
   }
 
@@ -36,6 +37,13 @@ export class PokeApiServiceService {
     return this.http.get(environment.URL + `ability/${id}`);
   }
 
+  getPokemonEvolutionChain(url: string) {
+    return this.http.get<PokemonSpecies>(url);
+  }
+
+  getpokemonHabitat(url: string) {
+    return this.http.get(url);
+  }
 
 
 

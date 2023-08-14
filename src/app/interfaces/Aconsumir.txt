@@ -1,0 +1,55 @@
+EN
+pokemon-species
+{
+
+--------REPETIDO LOS IDIOMAS "es"-----------
+  "flavor_text_entries" =[
+    {
+        "flavor_text": "Este Pokémon tiene un bulbo en el lomo. Dicen que,\nal absorber nutrientes, el bulbo se transforma en una\nflor grande.",
+        "language": {
+          "name": "es",
+          "url": "https://pokeapi.co/api/v2/language/7/"
+        },
+        "version": {
+          "name": "x",
+          "url": "https://pokeapi.co/api/v2/version/23/"
+        }
+      },
+  ]
+
+
+
+
+  CORRECCION PARA CORRECTO PRESENTACION DE CADENA DE EVOLUCION
+
+  existen pokemones con nombres y un guin intermedio (poke-name) estos pokemones
+  no tienen el mismo nombre en el poke.species por el cual es consultado
+  lo cual da que no se traiga la cadena de evolucion
+
+  Se puso un condicional para estos pokemons con guinones intermedios para poder mostrar la
+  cadena de evolucion siemrpe y cuadno no tenga evoluciones ya que el error
+  persiste si contiene evoluciones
+
+  hay que tener e cuenta que las evoluciones especiales como el pokemon Eevee no se
+  esta abordando de la manera adecuada...
+
+  como lo uso:
+  dentro de URL-species = evolution-chain (No estamos capturando el nombre pokemon) si
+    no el nombre de la especie y de hay mando a consultar el pokemon por medio de ese nombre
+
+  posibles soluciones:
+    ***crear condicional donde el tercer evoles_to este vacio tomar el segundo y asi
+    *** recorrer todo los evoles_to donde ecuentre uno vacio volver al anterior
+      y guardar el contador {count}
+
+      consumimos la espcies--->>>
+
+    evolves_to: (species.url) --> CONSUMUIR del primer evoles_to
+              para traer nombres de pokemon
+
+      pokemon-species({ id=679 })
+          https://pokeapi.co/api/v2/pokemon?limit= {count}  &offset= {id}
+
+
+
+

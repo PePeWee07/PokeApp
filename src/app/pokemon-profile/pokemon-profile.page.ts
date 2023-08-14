@@ -9,7 +9,9 @@ import { AlertController, IonicSlides } from '@ionic/angular';
 import { MyObjectSimilarAbilities } from '../interfaces/myModels/similarAbilities';
 
 import { ECharts, EChartsOption } from 'echarts';
-// import { CHART_LABELS } from '../charts-data';
+import { PokemonSpecies } from '../interfaces/pokemonSpecies';
+import { EvolutionChain } from "../interfaces/EvolutionChain"
+import { PokemonHabitat } from '../interfaces/PokemonHabitat';
 
 @Component({
   selector: 'app-pokemon-profile',
@@ -38,6 +40,9 @@ export class PokemonProfilePage implements OnInit  {
   ability: AbilitysPokemon[] = []; //Descripcio de habilidad del pokemon
   abilitySimilar: MyObjectSimilarAbilities[] = [];
   statsData: any[] = []; //no compatible con la ionterfaz Stast por undefined cambiarla si desear usarla
+  pokeSpecies: PokemonSpecies [] = [];
+  evolutioChain: Pokemon[] = [];
+  pokeHabitat: PokemonHabitat[] = [];
   name: any  = "Pokemon name";
 
   getPokemon(){
@@ -184,6 +189,126 @@ export class PokemonProfilePage implements OnInit  {
         await alert.present();
       });
 
+      //COnsumo de Especies de pokemon, habitat y cadena de evolucion
+      this.pokeService.getPokemonSpecies(resp.species?.name!).subscribe((resp: PokemonSpecies) => {
+
+        let { is_baby, is_legendary, is_mythical, habitat, flavor_text_entries, evolution_chain } = resp;
+
+        this.pokeSpecies.push({ is_baby, is_legendary, is_mythical, habitat, flavor_text_entries, evolution_chain });
+        console.log("Especies: ", this.pokeSpecies);
+
+        //Consumo de cadena de evolucion
+        this.pokeService.getPokemonEvolutionChain(evolution_chain?.url!).subscribe(
+          (res: EvolutionChain) => {
+            let { chain } = res;
+            // Primera evolución
+
+            let firstEvolution = chain?.species?.name;
+
+            // Segunda evolución
+            let secondEvolution = chain?.evolves_to?.[0]?.species?.name;
+
+            // Tercera evolución
+            let thirdEvolution = chain?.evolves_to?.[0]?.evolves_to?.[0]?.species?.name;
+
+            const nameEvolutions = [];
+
+            if (this.name.includes("-")) {
+              if (firstEvolution === this.name) {
+                nameEvolutions.push(firstEvolution);
+              }else{
+                nameEvolutions.push(this.name);
+              }
+
+              if (secondEvolution) {
+                nameEvolutions.push(secondEvolution);
+              }
+
+              if (thirdEvolution) {
+                nameEvolutions.push(thirdEvolution);
+              }
+            } else {
+              nameEvolutions.push(firstEvolution);
+
+              if (secondEvolution) {
+                nameEvolutions.push(secondEvolution);
+              }
+
+              if (thirdEvolution) {
+                nameEvolutions.push(thirdEvolution);
+              }
+            }
+
+            const requestEvolutions = nameEvolutions.map((name: string | undefined) => {
+              return this.pokeService.getPokemonByName(name!);
+            })
+
+            forkJoin(requestEvolutions).subscribe(
+              (poke: any[]) => {
+                poke.forEach((pokemon: Pokemon) => {
+                  let { id, name, sprites, types } = pokemon;
+                  this.evolutioChain.push({ id, name, sprites, types });
+                });
+              }, async (error) => {
+                console.log("Error-getPokemonByName-forEvolution: ", error);
+                const alert = await this.alertController.create({
+                  header: 'Alerta',
+                  subHeader: 'No se encontro el Pokémon',
+                  message: 'No se pudo traer el Pokémon para ver la evolución',
+                  buttons: ['OK'],
+                });
+                await alert.present();
+              });
+
+
+          }, async (error) => {
+            console.log("Error-getPokemonEvolutionChain: ", error);
+            const alert = await this.alertController.create({
+              header: 'Alerta',
+              subHeader: 'No se encontro la cadena de evolución',
+              message: 'No se pudo traer la cadena de evolución del Pokémon',
+              buttons: ['OK'],
+            })
+            await alert.present();
+          });
+
+
+        //Consumo de habitat
+        if(habitat == null){
+          this.pokeHabitat.push({ id: 0, name: "No tiene habitad", names: [{ language: { name: "es", url: "Null" }, name: "No tiene habitad" }]  });
+        }else{
+          this.pokeService.getpokemonHabitat(resp.habitat?.url!).subscribe(
+            (habitat: PokemonHabitat) => {
+              let { id, name, names } = habitat;
+              this.pokeHabitat.push({ id, name, names });
+              console.log("Habitat: ", this.pokeHabitat);
+            }, async (error) => {
+              console.log("Error-getpokemonHabitat: ", error);
+              const alert = await this.alertController.create({
+                header: 'Alerta',
+                subHeader: 'No se encontro el habitat',
+                message: 'No se pudo traer el habitat del Pokémon',
+                buttons: ['OK'],
+              })
+              await alert.present();
+            }
+          );
+        }
+
+
+      },
+      async (error) => {
+        console.log("Error-getPokemonSpecies: ", error);
+        const alert = await this.alertController.create({
+          header: 'Alerta',
+          subHeader: 'No se encontro la especie',
+          message: 'No se pudo traer la especie del Pokémon',
+          buttons: ['OK'],
+
+        })
+        await alert.present();
+      });
+
     },
     async (error) => {
       console.error("No se econtro el Pokémon " ,error);
@@ -199,6 +324,18 @@ export class PokemonProfilePage implements OnInit  {
   }
 
   darkMode: boolean = false;
+  toogleDarkMode() {
+    this.darkMode = !this.darkMode;
+    document.body.classList.toggle('dark', this.darkMode);
+    if (this.darkMode) {
+      Preferences.set({ key: 'darkModeActivated', value: 'true' });
+      // localStorage.setItem('darkModeActivated', 'true');
+    } else {
+      // localStorage.setItem('darkModeActivated', 'false');
+      Preferences.set({ key: 'darkModeActivated', value: 'false' });
+    }
+  }
+
   //Chekamos el modo Dark para guardarlo en LocalStorage ... Preferences por decir es mejor para Dispositivos moviles
   async checkAppMode() {
     // const checkIsDarkMode = localStorage.getItem('darkModeActivated');
@@ -373,6 +510,10 @@ setSelectedLanguage(abilityName: string, language: string | undefined) {
     this.selectedLanguageName[name] = language;
   }
 
+  slectedLanguageHability: { [idiomaName: string ]: string | undefined } = {};
+  lenguajeHabilidad(abi: AbilitysPokemon){
+  }
+
   isAbilityOcult(algo: boolean){
     if(algo){
       return "Si";
@@ -424,6 +565,30 @@ setSelectedLanguage(abilityName: string, language: string | undefined) {
     }
 
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  isPokeBbay(isBaby: boolean){
+    if(isBaby){
+      return "Bebé";
+    }else{
+      return false;
+    }
+  }
+
+  isPokeLegendary(isLegendary: boolean){
+    if(isLegendary){
+      return "Legendario";
+    }else{
+      return false;
+    }
+  }
+
+  isPokeMythical(isMythical: boolean){
+    if(isMythical){
+      return "Mítico";
+    }else{
+      return false;
+    }
   }
 
   //slider de SWIPER... por si quiero ejecutar algo cuando cambie de slide
