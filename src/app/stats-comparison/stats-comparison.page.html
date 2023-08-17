@@ -62,6 +62,7 @@
                 *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
                 [src]="poke.sprites?.front_default"
                 [alt]="poke.name"
+                [routerLink]="['/pokemon-profile', poke.id]"
               />
             </ion-card-content>
 
@@ -72,6 +73,7 @@
                   <img style="height: 90px; width: 90px;"
                     [src]="poke.sprites?.other?.['official-artwork']?.front_default"
                     [alt]="poke.name"
+                    [routerLink]="['/pokemon-profile', poke.id]"
                   />
                 </div>
               </div>
@@ -81,6 +83,7 @@
                   <img style="height: 90px; width: 90px;"
                     src="../../assets/img/spriteNull.png"
                     [alt]="poke.name"
+                    [routerLink]="['/pokemon-profile', poke.id]"
                   />
                 </div>
               </ng-template>
@@ -89,6 +92,149 @@
           </ion-card>
 
         </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="12">
+
+          <div class="polar-grap">
+            <ion-text class="ion-text-center" mode="ios" color="tertiary">
+              <h1>Estadísticas Base</h1>
+            </ion-text>
+            <div style="height: 100%;" echarts [options]="option"  (chartInit)="onChartInit($event)"></div>
+          </div>
+
+        </ion-col>
+
+        <ion-col size="10" >
+          <ion-text class="ion-text-center" mode="ios" color="tertiary">
+            <h1>Estadísticas Base</h1>
+          </ion-text>
+          <div *ngFor="let poke of pokemon">
+            <ion-accordion-group>
+              <ion-accordion value="first" class="ion-padding-vertical">
+                <ion-item slot="header" color="light">
+                  <ion-label style="text-transform: capitalize;">
+                    {{poke.name}}
+                  </ion-label>
+                  <div *ngIf="poke.sprites?.front_default; else condition1ElseBlock">
+                    <img [src]="poke.sprites?.front_default" height="70px" width="70px" [alt]="poke.name">
+                  </div>
+                  <ng-template #condition1ElseBlock>
+                    <img [src]="poke.sprites?.other?.['official-artwork']?.front_default" height="70px" width="70px" [alt]="poke.name">
+                  </ng-template>
+                </ion-item>
+                <div class="ion-padding" slot="content">
+                  <div *ngFor="let stat of poke.stats">
+                    <ion-text color="tertiary" mode="ios" class="ion-text-center">
+                      <pre>{{stat.stat?.name}}- {{stat.base_stat}}</pre>
+                    </ion-text>
+                  </div>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </div>
+        </ion-col>
+
+        <ion-col size="10">
+          <ion-text color="tertiary" mode="ios" class="ion-text-center">
+            <h1>Mejores Estadísticas</h1>
+          </ion-text>
+
+          <ion-accordion-group>
+            <ion-accordion value="first" style="border-radius: 10px;">
+              <ion-item slot="header" color="light">
+                <ion-label>Desplegar</ion-label>
+              </ion-item>
+              <div class="ion-padding" slot="content">
+                <ion-list *ngFor="let stat of compareSatats" class="ion-text-center">
+
+                  <ion-list-header>
+                    <ion-label color="tertiary">Vida</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <div>
+                      <div *ngIf="getPokemonByName(stat.Hp.name)">
+                        <img [src]="getPokemonByName(stat.Hp.name)?.sprites?.front_default" height="70px" width="70px" [alt]="stat.Hp.name">
+                      </div>
+                    </div>
+                    <pre style="text-transform: capitalize;">{{ stat.Hp.name }}  {{ stat.Hp.value }}-hp</pre>
+                  </ion-item>
+
+                  <ion-list-header>
+                    <ion-label color="tertiary">Ataque</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <div>
+                      <div *ngIf="getPokemonByName(stat.Attack.name)">
+                        <img [src]="getPokemonByName(stat.Attack.name)?.sprites?.front_default" height="70px" width="70px" [alt]="stat.Attack.name">
+                      </div>
+                    </div>
+                    <pre style="text-transform: capitalize;">{{ stat.Attack.name }}  {{ stat.Attack.value }}-atk</pre>
+                  </ion-item>
+
+                  <ion-list-header>
+                    <ion-label color="tertiary">Defensa</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <div>
+                      <div *ngIf="getPokemonByName(stat.Defense.name)">
+                        <img [src]="getPokemonByName(stat.Defense.name)?.sprites?.front_default" height="70px" width="70px" [alt]="stat.Defense.name">
+                      </div>
+                    </div>
+                    <pre style="text-transform: capitalize;">{{ stat.Defense.name }}  {{ stat.Defense.value }}-def</pre>
+                  </ion-item>
+
+                  <ion-list-header>
+                    <ion-label color="tertiary">Ataque Especial</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <div>
+                      <div *ngIf="getPokemonByName(stat['Sp. Atk'].name)">
+                        <img [src]="getPokemonByName(stat['Sp. Atk'].name)?.sprites?.front_default" height="70px" width="70px" [alt]="stat['Sp. Atk'].name">
+                      </div>
+                    </div>
+                    <pre style="text-transform: capitalize;">{{ stat['Sp. Atk'].name }}  {{ stat['Sp. Atk'].value }}-atk</pre>
+                  </ion-item>
+
+                  <ion-list-header>
+                    <ion-label color="tertiary">Defensa Especial</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <div>
+                      <div *ngIf="getPokemonByName(stat['Sp. Def'].name)">
+                        <img [src]="getPokemonByName(stat['Sp. Def'].name)?.sprites?.front_default" height="70px" width="70px" [alt]="stat['Sp. Def'].name">
+                      </div>
+                    </div>
+                    <pre style="text-transform: capitalize;">{{ stat['Sp. Def'].name }}  {{ stat['Sp. Def'].value }}-def</pre>
+                  </ion-item>
+
+                  <ion-list-header>
+                    <ion-label color="tertiary">Velocidad</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <div>
+                      <div *ngIf="getPokemonByName(stat.Speed.name)">
+                        <img [src]="getPokemonByName(stat.Speed.name)?.sprites?.front_default" height="70px" width="70px" [alt]="stat.Speed.name">
+                      </div>
+                    </div>
+                    <pre style="text-transform: capitalize;">{{ stat.Speed.name }}  {{ stat.Speed.value }}-speed</pre>
+                  </ion-item>
+
+                </ion-list>
+              </div>
+            </ion-accordion>
+          </ion-accordion-group>
+
+
+
+          <div *ngIf="compareEmpate.length > 0">
+            <div *ngFor="let empa of compareEmpate">
+              <pre>{{empa|json}}</pre>
+            </div>
+          </div>
+        </ion-col>
+
       </ion-row>
     </ion-grid>
 

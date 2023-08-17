@@ -23,7 +23,7 @@ export class PokemonPage implements OnInit {
     this.isToastOpen = isOpen;
   }
 
-  limit: number = 10; // Limite de pokemones a mostrar por ionic infinite scroll
+  limit: number = 25; // Limite de pokemones a mostrar por ionic infinite scroll
   //capturamos el valor del input para el limite
    onInputChange(event: any, openToast: boolean) {
     const newValue = parseInt(event.detail.value, 10);

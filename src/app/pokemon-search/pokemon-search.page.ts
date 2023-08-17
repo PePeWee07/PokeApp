@@ -84,8 +84,6 @@ handleInput(event: any, openToast: boolean) {
 
 
   srcPokemonSprite(sprite: any){
-    const spriteNull = "../../assets/img/spriteNull.png";
-
     if(sprite == null){
       return "poke.sprites?.other?.official_artwork?.front_default";
     }

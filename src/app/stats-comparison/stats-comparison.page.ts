@@ -1,3 +1,4 @@
+import { Color } from './../interfaces/pokemonSpecies';
 import { AlertController } from '@ionic/angular';
 import { Component, Input, OnInit } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
@@ -5,7 +6,12 @@ import { PokeApiServiceService } from '../services/poke-api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Pokemon } from '../interfaces/Pokemon';
+import { ECharts, EChartsOption, RadarComponentOption } from 'echarts';
+import * as echarts from 'echarts';
 
+interface HighestStats {
+  [key: string]: { name: string; value: number };
+}
 @Component({
   selector: 'app-stats-comparison',
   templateUrl: './stats-comparison.page.html',
@@ -18,7 +24,18 @@ export class StatsComparisonPage implements OnInit {
     private idRoute: ActivatedRoute
   ) {}
 
+  //Options Ngx-ECharts --->
+  option: EChartsOption = {};
+
+  echartsInstance!: ECharts;
+  onChartInit(chart: ECharts) {
+    this.echartsInstance = chart;
+  }
+  //<-----
+
   pokemon: Pokemon[] = [];
+  compareSatats: any[] = [];
+  compareEmpate: any[] = [];
 
   loadPokemon() {
     const id = this.idRoute.snapshot.paramMap.get('id');
@@ -29,22 +46,210 @@ export class StatsComparisonPage implements OnInit {
       return this.pokeService.getPokemonById(id);
     });
 
+
+    // Genera un color aleatorio en formato rgba
+    function getRandomColor() {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      const alpha = 0.6; // Puedes ajustar la transparencia aquí
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+
     forkJoin(requests!).subscribe((res: any[]) => {
-      res.forEach((pokemonData: Pokemon) => {
-        let { name, sprites, stats, types, id, abilities, moves } = pokemonData;
-        this.pokemon.push({
-          name,
-          sprites,
-          stats,
-          types,
-          id,
-          abilities,
-          moves,
-        });
-        console.log('Pokemon: ', this.pokemon);
+      const radarData = res.map((pokemonData: any) => {
+
+        this.pokemon.push(pokemonData);
+
+        const statsValues = pokemonData.stats.map((stat: any) => stat.base_stat);
+
+    return {
+      value: statsValues,
+      name: pokemonData.name,
+      areaStyle: {
+        color: getRandomColor(),
+      },
+      // areaStyle: {
+      //   color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [
+      //     {
+      //       color: getRandomColor(),
+      //       offset: 0
+      //     },
+      //     {
+      //       color: getRandomColor(),
+      //       offset: 1
+      //     }
+      //   ])
+      // }
+    };
       });
-    });
+
+      const pokemonNames = res.map((pokemonData: any) => pokemonData.name);
+
+      this.option = {
+        legend: {
+          data: pokemonNames,
+          backgroundColor: '#222428',
+          borderRadius: 10,
+          itemStyle: {
+            // color: color,
+          },
+          textStyle: {
+            color: '#ffffff',
+            fontStyle: 'oblique',
+            fontWeight: 'bold',
+            fontFamily: 'monospace',
+            fontSize: 14,
+          },
+        },
+        radar: {
+          indicator: [
+            { name: 'Hp', max: 255, min: 0 },
+            { name: 'Attack', max: 255, min: 0 },
+            { name: 'Defense', max: 255, min: 0 },
+            { name: 'Sp. Atk', max: 255, min: 0 },
+            { name: 'Sp. Def', max: 255, min: 0 },
+            { name: 'Speed', max: 255, min: 0 },
+          ],
+          center: ['50%', '50%'],
+          axisName: {
+            // formatter: '-{value}-',
+            backgroundColor: '#222428',
+            borderRadius: 3,
+            padding: [3, 5],
+            color: '#ffffff',
+          },
+          splitArea: {
+            areaStyle: {
+              color: [
+                '#ccf3412c',
+                '#ccf3412c',
+                '#f3bb412c',
+                '#ccf3412c, #f35c412c',
+                '#f35c412c',
+                '#f3bb412c',
+                '#ccf3412c',
+              ],
+              shadowColor: 'rgba(255, 255, 255, 0.8)',
+              shadowBlur: 10,
+            },
+          },
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(0, 0, 0, 0.3)',
+            },
+          },
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(211, 253, 250, 0.5)',
+            },
+          },
+        },
+        series: [
+          {
+            type: 'radar',
+            data: radarData,
+            lineStyle: {
+              type: 'solid',
+            },
+            symbol: 'none',
+          },
+        ],
+      };
+
+
+
+  // Comparación de estadísticas
+  const highestStats: HighestStats = {
+    Hp: { name: '', value: -1 },
+    Attack: { name: '', value: -1 },
+    Defense: { name: '', value: -1 },
+    'Sp. Atk': { name: '', value: -1 },
+    'Sp. Def': { name: '', value: -1 },
+    Speed: { name: '', value: -1 },
+  };
+
+  // radarData.forEach((pokemon: any) => {
+  //   pokemon.value.forEach((value: number, index: number) => {
+  //     const radarOptions = this.option.radar as { indicator: { name: string }[] };
+  //     const statName = radarOptions.indicator[index].name;
+  //     if (value > highestStats[statName].value) {
+  //       highestStats[statName].name = pokemon.name;
+  //       highestStats[statName].value = value;
+  //     } else if (value === highestStats[statName].value) {
+  //       highestStats[statName].name = 'Empate';
+  //     }
+  //   });
+  // });
+  // Definir un objeto para mantener el seguimiento de los empates
+const tieStats: { [key: string]: string[] } = {};
+
+radarData.forEach((pokemon: any) => {
+  pokemon.value.forEach((value: number, index: number) => {
+    const radarOptions = this.option.radar as { indicator: { name: string }[] };
+    const statName = radarOptions.indicator[index].name;
+
+    if (!highestStats[statName] || value > highestStats[statName].value) {
+      highestStats[statName] = {
+        name: pokemon.name,
+        value: value,
+      };
+      // Borrar el registro de empate si se rompe
+      delete tieStats[statName];
+    } else if (value === highestStats[statName].value) {
+      // Registrar empate
+      if (!tieStats[statName]) {
+        tieStats[statName] = [highestStats[statName].name];
+      }
+      tieStats[statName].push(pokemon.name);
+    }
+  });
+});
+
+// Luego, puedes recorrer el objeto tieStats para mostrar los empates
+for (const stat in tieStats) {
+  if (tieStats.hasOwnProperty(stat)) {
+    this.compareEmpate.push(`Empate en ${stat}: ${tieStats[stat].join(', ')}`)
+    console.log(`Empate en ${stat}: ${tieStats[stat].join(', ')}`);
+    console.log('Pokémon con empate:', this.compareEmpate);
   }
+}
+
+
+
+  this.compareSatats.push(highestStats);
+  console.log('Pokémon con las estadísticas más altas:', this.compareSatats);
+
+    }, (err) => {
+      console.log('Error: ', err);
+    });
+
+  }
+
+
+  transformtext(str: string): string {
+    if (str === undefined) {
+      return 'Null';
+    } else if (str === null) {
+      return 'Null';
+    } else if (str.length === 0) {
+      return 'Null';
+    } else if (str === 'special-defense') {
+      return 'Sp. Def';
+    } else if (str === 'special-attack') {
+      return 'Sp. Atk';
+    }
+
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+
+  getPokemonByName(pokemonName: string): Pokemon | undefined {
+    return this.pokemon.find(poke => poke.name === pokemonName);
+  }
+
+
 
   //cambiamos el modo Dark
   darkMode: boolean = false;
