@@ -21,11 +21,12 @@
           <ion-label>Opciones </ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
+
           <ion-item>
             <ion-input
               type="number"
               pattern="[0-9]*"
-              label="Límite de Pokémones"
+              label="Límite de carga Pokémones"
               label-placement="stacked"
               placeholder="Solo Números ejm:(100) min:10, max:100"
               min="10"
@@ -54,10 +55,32 @@
             </ion-range>
           </ion-item>
 
+          <ion-item>
+            <ion-label>Max. Pokémones selecionados</ion-label>
+            <ion-input
+            type="numeber"
+            pattern="[0-9]*"
+            label="Max. Pokémones selecionados"
+            label-placement="stacked"
+            placeholder="Min:2, Max:6"
+            min="2"
+            max="6"
+            [value]="maxPokemonSelect"
+            (ionChange)="onInputMaxSelect($event, true)"
+            ></ion-input>
+          </ion-item>
+
           <ion-toast
             style="color: red"
             [isOpen]="isToastOpen"
             message="El valor debe ser entre 10 y 100"
+            [duration]="2000"
+            (didDismiss)="onInputChange($event, false)"
+          ></ion-toast>
+          <ion-toast
+            style="color: red"
+            [isOpen]="isToastOpen"
+            message="El valor debe ser entre 2 y 6"
             [duration]="2000"
             (didDismiss)="onInputChange($event, false)"
           ></ion-toast>
@@ -68,7 +91,27 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-text-center">
+
+  <ion-fab *ngIf="selectedPokemonIds.length > 0" slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button size="small" color="tertiary">
+     {{ selectedPokemonIds.length }}
+    </ion-fab-button>
+    <ion-fab-list side="top">
+
+      <div *ngFor="let poke of pokemonSelectConsult">
+        <ion-fab-button>
+           <img [src]="poke.sprites?.front_default" [alt]="poke.name">
+        </ion-fab-button>
+      </div>
+
+      <ion-fab-button>
+        <ion-icon name="trash" color="danger" (click)="resetSelectPokemons()"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+
   <div id="container">
+
     <ion-grid *ngIf="loadedSkeleton">
       <ion-row style="display: flex; justify-content: center">
         <ion-col size="6" *ngFor="let a of [1,1,1,1,1,1]">
@@ -127,29 +170,44 @@
                 </ion-card-subtitle>
               </div>
             </ion-card-header>
-            <ion-card-content style="display: flex; justify-content: center;">
+            <ion-card-content
+            (mousedown)="startPressTimer(poke.id!);"
+                (mouseup)="endPressTimer(poke.id!);"
+                (touchstart)="startPressTimer(poke.id!);"
+                (touchend)="endPressTimer(poke.id!);"
+             style="display: flex; justify-content: center;"
+             >
               <img
                 *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
                 [src]="poke.sprites?.front_default"
                 [alt]="poke.name"
-                [routerLink]="['/pokemon-profile/' + poke.id]"
               />
             </ion-card-content>
 
             <ng-template #condition1ElseBlock>
               <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
-                <div style="display: flex; justify-content: center;">
+                <div
+                (mousedown)="startPressTimer(poke.id!);"
+                (mouseup)="endPressTimer(poke.id!);"
+                (touchstart)="startPressTimer(poke.id!);"
+                (touchend)="endPressTimer(poke.id!);"
+                style="display: flex; justify-content: center;">
                   <img style="height: 90px; width: 90px;"
                     [src]="poke.sprites?.other?.['official-artwork']?.front_default"
-                    alt="Imagen por defecto"
+                    [alt]="poke.name"
                   />
                 </div>
               </div>
               <ng-template #condition2ElseBlock>
-                <div style="display: flex; justify-content: center;">
+                <div
+                (mousedown)="startPressTimer(poke.id!);"
+                (mouseup)="endPressTimer(poke.id!);"
+                (touchstart)="startPressTimer(poke.id!);"
+                (touchend)="endPressTimer(poke.id!);"
+                 style="display: flex; justify-content: center;">
                   <img style="height: 90px; width: 90px;"
                     src="../../assets/img/spriteNull.png"
-                    alt="Imagen por defecto"
+                    [alt]="poke.name"
                   />
                 </div>
               </ng-template>

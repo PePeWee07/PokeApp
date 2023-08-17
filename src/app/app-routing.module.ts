@@ -16,12 +16,26 @@ const routes: Routes = [
     loadChildren: () => import('./pokemon/pokemon.module').then( m => m.PokemonPageModule)
   },
   {
-    path: 'pokemon-profile/:id',
-    loadChildren: () => import('./pokemon-profile/pokemon-profile.module').then( m => m.PokemonProfilePageModule)
+    path: 'pokemon-profile',
+    children: [
+      {
+        path: ':id',
+        loadChildren: () => import('./pokemon-profile/pokemon-profile.module').then(m => m.PokemonProfilePageModule)
+      }
+    ]
   },
   {
     path: 'pokemon-search',
     loadChildren: () => import('./pokemon-search/pokemon-search.module').then( m => m.PokemonSearchPageModule)
+  },
+  {
+    path: 'stats-comparison',
+    children: [
+      {
+        path: ':id',
+        loadChildren: () => import('./stats-comparison/stats-comparison.module').then( m => m.StatsComparisonPageModule)
+      }
+    ]
   }
 ];
 

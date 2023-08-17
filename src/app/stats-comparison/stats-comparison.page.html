@@ -1,0 +1,96 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-item>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <h6>Pokedex</h6>
+      <ion-toggle
+        slot="end"
+        mode="ios"
+        [checked]="darkMode"
+        (ionChange)="toogleDarkMode()"
+      >
+      </ion-toggle>
+      <ion-icon slot="end" name="moon"></ion-icon>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+
+    <ion-grid>
+      <ion-row class="ion-justify-content-center ion-text-center">
+        <ion-col size="6" *ngFor="let poke of pokemon">
+
+          <ion-card
+            color="light"
+            [style]="borderCardPokemon(poke.types)"
+            class="card-equal-height"
+          >
+            <ion-card-header>
+              <ion-card-title
+                ><h5 style="text-transform: capitalize">
+                  {{poke.name}}
+                </h5></ion-card-title
+              >
+              <div *ngFor="let tipo of poke.types">
+                <div
+                  class="icon"
+                  [class]="pokeClass(tipo.type?.name)"
+                  style="margin-bottom: 3px"
+                >
+                  <img
+                    [src]="pokeTypeSVG(tipo.type?.name)"
+                    height="2%"
+                    width="2%"
+                  />
+                </div>
+                <ion-card-subtitle
+                  class="typePokemon"
+                  [style.background-color]="colorType(tipo.type?.name)"
+                >
+                  {{tipo.type?.name}}
+                </ion-card-subtitle>
+              </div>
+            </ion-card-header>
+            <ion-card-content
+             style="display: flex; justify-content: center;"
+             >
+              <img
+                *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
+                [src]="poke.sprites?.front_default"
+                [alt]="poke.name"
+              />
+            </ion-card-content>
+
+            <ng-template #condition1ElseBlock>
+              <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
+                <div
+                style="display: flex; justify-content: center;">
+                  <img style="height: 90px; width: 90px;"
+                    [src]="poke.sprites?.other?.['official-artwork']?.front_default"
+                    [alt]="poke.name"
+                  />
+                </div>
+              </div>
+              <ng-template #condition2ElseBlock>
+                <div
+                 style="display: flex; justify-content: center;">
+                  <img style="height: 90px; width: 90px;"
+                    src="../../assets/img/spriteNull.png"
+                    [alt]="poke.name"
+                  />
+                </div>
+              </ng-template>
+            </ng-template>
+
+          </ion-card>
+
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </div>
+</ion-content>

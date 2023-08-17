@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component , OnInit } from '@angular/core';
 import { PokeApiServiceService } from '../services/poke-api-service.service';
-import { Option, Result } from '../interfaces/LinkPokemons';
+import { Result } from '../interfaces/LinkPokemons';
 import { Pokemon } from '../interfaces/Pokemon';
 import { Preferences } from '@capacitor/preferences';
 import { forkJoin } from 'rxjs';
 import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pokemon',
@@ -12,7 +13,7 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./pokemon.page.scss'],
 })
 export class PokemonPage implements OnInit {
-  constructor(private pokeService: PokeApiServiceService, private alertController: AlertController) {}
+  constructor(private pokeService: PokeApiServiceService, private alertController: AlertController, private router:Router) {}
 
   public loadedSkeleton = true;
 
@@ -36,6 +37,22 @@ export class PokemonPage implements OnInit {
   //capturamos el valor del range para el limite
   onRangeChange(event: any) {
     this.limit = event.detail.value;
+  }
+
+  isToastOpen2 = false;
+  setOpen2(isOpen: boolean) {
+    this.isToastOpen = isOpen;
+  }
+
+
+  onInputMaxSelect(event: any, openToast: boolean) {
+    const newValue = parseInt(event.detail.value, 10);
+    if (!isNaN(newValue) && newValue >= 2 && newValue <= 7) {
+      this.maxPokemonSelect = newValue;
+    } else {
+      this.maxPokemonSelect = 2;
+      this.setOpen2(openToast)
+    }
   }
 
   pokemonLink: Result[] = [];
@@ -124,6 +141,112 @@ export class PokemonPage implements OnInit {
       }
     );
   }
+
+
+  pokemonBorderStates: { [key: number]: boolean } = {};
+
+  selectedPokemonId: number | undefined;
+  pressDuration: number = 0; // Variable para guardar el tiempo de presión
+  selectedPokemonIds: number[] = [];
+  pressTimerInterval: any; // Variable para guardar el interval del timer
+  maxPokemonSelect: number = 2; // ceunta de pokemones maximo a seleccionar
+
+  startPressTimer(pokeId: number) {
+    if (this.selectedPokemonIds.length < this.maxPokemonSelect) {
+    this.pressDuration = 0;
+    this.selectedPokemonId = pokeId;
+
+    //this.pokemonBorderStates[pokeId] = false;// Inicia con el borde sin aplicar
+
+    // Iniciar el interval del timer
+    this.pressTimerInterval = setInterval(() => {
+
+      this.pressDuration += 100; // Incrementa el tiempo cada 100 ms
+      console.log("Tiempo: ", this.pressDuration);
+      if (this.pressDuration >= 500) { // presionó más de 1 segundo
+        // El usuario mantuvo presionado el Pokémon durante el tiempo deseado
+
+       // this.pokemonBorderStates[pokeId] = true; // Aplica el borde para este Pokémon
+
+        clearInterval(this.pressTimerInterval); // Detener el interval del timer
+      }
+
+    }, 100);
+  }
+  }
+
+  endPressTimer(pokeId: number) {
+    clearInterval(this.pressTimerInterval); // Detener el interval del timer
+
+    if (this.pressDuration >= 500) { // Mantuvo presionado el tiempo deseado
+      console.log("El usuario mantuvo presionado el tiempo deseado");
+      if (this.selectedPokemonIds.includes(pokeId)) {
+        // Pokemon ya estaba seleccionado, quitar selección
+
+        //this.pokemonBorderStates[pokeId] = false; // Deja el borde aplicado
+
+        this.selectedPokemonIds.splice(this.selectedPokemonIds.indexOf(pokeId), 1);
+        this.consultSelectPokemons(this.selectedPokemonIds)
+
+
+      } else {
+        // Agregar la selección del Pokemon
+
+        //this.pokemonBorderStates[pokeId] = true;
+
+        this.selectedPokemonIds.push(pokeId);
+        this.consultSelectPokemons(this.selectedPokemonIds)
+
+        //si ya hay 2 pokemones seleccionados nos vamos a la pagina de comparacion
+        if(this.selectedPokemonIds.length == this.maxPokemonSelect){
+          this.router.navigate(['stats-comparison/'+this.selectedPokemonIds]);
+          this.resetSelectPokemons()
+
+        }
+      }
+    }  else {
+      // El usuario no mantuvo presionado el tiempo deseado
+
+      //this.pokemonBorderStates[pokeId] = false; // Quita el borde
+
+      console.log("El usuario no mantuvo presionado el tiempo deseado");
+      this.router.navigate(['/pokemon-profile/' + pokeId]);
+    }
+    // Reinicia la variable del tiempo de presión
+    this.pressDuration = 0;
+    this.selectedPokemonId = undefined;
+  }
+
+  resetSelectPokemons() {
+    this.pokemonSelectConsult = [];
+    this.selectedPokemonIds = [];
+  }
+
+
+pokemonSelectConsult: Pokemon[] = [];
+  consultSelectPokemons( ids: Array<number>){
+    this.pokemonSelectConsult = [];
+
+    if(ids.length){
+
+      const requests = ids.map(((pokeIdNumber: number) => {
+        return this.pokeService.getPokemonById(pokeIdNumber);
+      }));
+
+      forkJoin(requests).subscribe(
+        (pokemonData: any[]) => {
+          pokemonData.forEach((data: Pokemon) => {
+            let { sprites, id } = data;
+            this.pokemonSelectConsult.push({ sprites, id });
+          });
+        }
+      )
+
+    } else {
+      console.log("nada que consultar");
+    }
+  }
+
 
 
 
