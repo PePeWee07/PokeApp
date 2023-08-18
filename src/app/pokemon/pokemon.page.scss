@@ -65,27 +65,55 @@ ion-skeleton-text {
   --background-rgb: 188, 0, 255;
 }
 
-// ion-grid{
-// margin-top: 50%;
-// }
+@keyframes loading {
+  0%, 100% {
+    content: " / / ";
+  }
+  25% {
+    content: " - - ";
+  }
+  50% {
+    content: " \\ \\ ";
+  }
+  75% {
+    content: " | | ";
+  }
+}
+
+.loading-text::before {
+  content: " / ";
+  animation: loading 1s infinite;
+  display: inline-block;
+}
+.loading-text::after {
+  content: " \\ ";
+  animation: loading 1s infinite;
+  display: inline-block;
+}
+
 
 ion-accordion-group{
   margin-bottom: 3px;
   margin-top: 5px;
 }
 
-ion-accordion-group ion-accordion{
+ion-toolbar ion-accordion-group ion-accordion{
   background: #a2d2ffe0;
 }
 
-ion-accordion-group ion-accordion ion-item:nth-child(1) {
+ion-toolbar ion-accordion-group ion-accordion ion-item:nth-child(1) {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
 
-ion-accordion-group ion-accordion ion-item:nth-child(2) {
+ion-toolbar ion-accordion-group ion-accordion ion-item:nth-child(2) {
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+}
+
+ion-toolbar ion-accordion-group ion-accordion ion-item:nth-child(3) {
+  margin-top: 5px;
+  border-radius: 10px;
 }
 
 .typePokemon{

@@ -13,7 +13,7 @@ import { PokemonPage } from './pokemon.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    PokemonPageRoutingModule
+    PokemonPageRoutingModule,
   ],
   declarations: [PokemonPage]
 })

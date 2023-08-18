@@ -158,8 +158,6 @@ export class StatsComparisonPage implements OnInit {
         ],
       };
 
-
-
   // Comparación de estadísticas
   const highestStats: HighestStats = {
     Hp: { name: '', value: -1 },
@@ -170,19 +168,6 @@ export class StatsComparisonPage implements OnInit {
     Speed: { name: '', value: -1 },
   };
 
-  // radarData.forEach((pokemon: any) => {
-  //   pokemon.value.forEach((value: number, index: number) => {
-  //     const radarOptions = this.option.radar as { indicator: { name: string }[] };
-  //     const statName = radarOptions.indicator[index].name;
-  //     if (value > highestStats[statName].value) {
-  //       highestStats[statName].name = pokemon.name;
-  //       highestStats[statName].value = value;
-  //     } else if (value === highestStats[statName].value) {
-  //       highestStats[statName].name = 'Empate';
-  //     }
-  //   });
-  // });
-  // Definir un objeto para mantener el seguimiento de los empates
 const tieStats: { [key: string]: string[] } = {};
 
 radarData.forEach((pokemon: any) => {
@@ -215,8 +200,6 @@ for (const stat in tieStats) {
     console.log('Pokémon con empate:', this.compareEmpate);
   }
 }
-
-
 
   this.compareSatats.push(highestStats);
   console.log('Pokémon con las estadísticas más altas:', this.compareSatats);

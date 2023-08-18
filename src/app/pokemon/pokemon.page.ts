@@ -6,6 +6,7 @@ import { Preferences } from '@capacitor/preferences';
 import { forkJoin } from 'rxjs';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @Component({
   selector: 'app-pokemon',
@@ -16,6 +17,57 @@ export class PokemonPage implements OnInit {
   constructor(private pokeService: PokeApiServiceService, private alertController: AlertController, private router:Router) {}
 
   public loadedSkeleton = true;
+
+  filterType: string = ''; // Tipo de filtro seleccionado
+  filterValue: string = ''; // Valor de filtro ingresado
+  filteredPokemon: any[]= []; // Pokémon filtrados según los criterios
+  // Declara variables booleanas para cada filtro
+  foundByType = false;
+  foundByName = false;
+  foundById = false;
+
+  getTypeNames(types:any) {
+    return types.map((type:any) => type.type.name).join(', ');
+  }
+  cleanFIlter(){
+    // this.filterType = '';
+    this.filterValue = '';
+    this.filteredPokemon = [];
+  }
+  applyFilter() {
+    if(this.filterType && this.filterValue){
+
+      // Lógica para aplicar los filtros
+      if (this.filterType === 'type') {
+        this.filteredPokemon = this.pokemon.filter(poke =>
+          poke.types?.some(type => type.type?.name === this.filterValue)
+        );
+        this.foundByType = this.filteredPokemon.length > 0;
+      }
+
+      if (this.filterType === 'name') {
+        this.filteredPokemon = this.pokemon.filter(poke =>
+          poke.name?.toLowerCase().includes(this.filterValue.toLowerCase())
+        );
+        this.foundByName = this.filteredPokemon.length > 0;
+      }
+
+      if (this.filterType === 'id') {
+        this.filteredPokemon = this.pokemon.filter(poke =>
+          poke.id?.toString() === this.filterValue
+        );
+        this.foundById = this.filteredPokemon.length > 0;
+      }
+
+    } else if(this.filterType && !this.filterValue){
+      console.log("Digite un valor para filtrar");
+    } else if(!this.filterType && this.filterValue){
+      console.log("Seleccione un tipo de filtro");
+    }
+    else {
+      console.log("Seleccione un tipo de filtro y digite un valor para filtrar");
+    }
+  }
 
   //tostada para el limite de pokemones
   isToastOpen = false;
