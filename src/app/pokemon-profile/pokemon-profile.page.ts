@@ -4,7 +4,8 @@ import { Ability, Pokemon, Stat } from '../interfaces/Pokemon';
 import { PokeApiServiceService } from '../services/poke-api-service.service';
 import { Preferences } from '@capacitor/preferences';
 import { AbilitysPokemon } from '../interfaces/AbilitysPokemon';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { AlertController, IonicSlides } from '@ionic/angular';
 import { MyObjectSimilarAbilities } from '../interfaces/myModels/similarAbilities';
 
@@ -12,6 +13,7 @@ import { ECharts, EChartsOption } from 'echarts';
 import { PokemonSpecies } from '../interfaces/pokemonSpecies';
 import { EvolutionChain } from '../interfaces/EvolutionChain';
 import { PokemonHabitat } from '../interfaces/PokemonHabitat';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-pokemon-profile',
@@ -23,8 +25,34 @@ export class PokemonProfilePage implements OnInit {
     private idRoute: ActivatedRoute,
     private pokeService: PokeApiServiceService,
     private alertController: AlertController,
-    private router: Router
+    private router: Router,
+    private httpClient: HttpClient
   ) {}
+
+  imageExists = false;
+  async checkImageExists() {
+    const imageUrl = `../../assets/Pokemon3d/ani-front/${this.name}.gif`;
+
+    try {
+      await this.httpClient.get(imageUrl, { responseType: 'blob' }).toPromise();
+      this.imageExists = true;
+    } catch (error) {
+      this.imageExists = false;
+    }
+
+  }
+  imageExistShiny = false;
+  async checkImageExistShiny() {
+    const imageUrl = `../../assets/Pokemon3d/ani-front-shiny/${this.name}.gif`;
+
+    try {
+      await this.httpClient.get(imageUrl, { responseType: 'blob' }).toPromise();
+      this.imageExistShiny = true;
+    } catch (error) {
+      this.imageExistShiny = false;
+    }
+
+  }
 
   //Options Ngx-ECharts --->
   option: EChartsOption = {};
@@ -51,7 +79,8 @@ export class PokemonProfilePage implements OnInit {
       (resp: Pokemon) => {
         this.pokemon.push(resp);
         this.name = resp.name;
-
+        this.checkImageExists();
+        this.checkImageExistShiny();
         //Link o nombre de la habilidad a  CONSUMIR
         this.abilities.push(...resp.abilities!);
         this.statsData.push(...resp.stats!);
@@ -325,7 +354,6 @@ export class PokemonProfilePage implements OnInit {
                 (habitat: PokemonHabitat) => {
                   let { id, name, names } = habitat;
                   this.pokeHabitat.push({ id, name, names });
-                  console.log('Habitat: ', this.pokeHabitat);
                 },
                 async (error) => {
                   console.log('Error-getpokemonHabitat: ', error);
@@ -637,6 +665,7 @@ export class PokemonProfilePage implements OnInit {
 
   ngOnInit() {
     this.getPokemon();
+
     this.checkAppMode();
   }
 }

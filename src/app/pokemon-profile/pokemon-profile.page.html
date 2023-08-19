@@ -36,82 +36,113 @@
         </div>
       </div>
 
-      <ion-row
+      <ion-row *ngFor="let poke of pokemon"
         style="display: flex; justify-content: center"
         class="ion-justify-content-center"
       >
-        <ion-col size="auto" *ngFor="let poke of pokemon">
-          <ion-card
-            color="light"
-            [style]="borderCardPokemon(poke.types)"
-            class="card-equal-height"
-          >
-            <ion-card-header>
-              <ion-card-title
-                ><h5 style="text-transform: capitalize; text-align: center">
-                  {{poke.name}}
-                </h5></ion-card-title
-              >
-              <div *ngFor="let tipo of poke.types">
-                <div
-                  class="icon"
-                  [class]="pokeClass(tipo.type?.name)"
-                  style="margin-bottom: 3px"
-                >
-                  <img
-                    [src]="pokeTypeSVG(tipo.type?.name)"
-                    height="2%"
-                    width="2%"
-                  />
-                </div>
-                <ion-card-subtitle
-                  class="typePokemon ion-text-center"
-                  [style.background-color]="colorType(tipo.type?.name)"
-                >
-                  {{tipo.type?.name}}
-                </ion-card-subtitle>
-              </div>
-            </ion-card-header>
-            <ion-card-content style="display: flex; justify-content: center;">
-              <img
-                *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
-                [src]="poke.sprites?.front_default"
-                [alt]="poke.name"
-                [routerLink]="['/pokemon-profile/' + poke.id]"
-              />
-            </ion-card-content>
+        <ion-col size="7">
+          <div>
+            <ion-card
+              color="light"
+              [style]="borderCardPokemon(poke.types)"
+              class="card-equal-height"
+            >
 
-            <ng-template #condition1ElseBlock>
-              <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
-                <div style="display: flex; justify-content: center;">
-                  <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
-                    [src]="poke.sprites?.other?.['official-artwork']?.front_default"
-                    alt="Imagen por defecto"
-                  />
+              <ion-card-header>
+                <ion-card-title
+                  ><h5 style="text-transform: capitalize; text-align: center">
+                    {{poke.name}}
+                  </h5></ion-card-title
+                >
+                <div *ngFor="let tipo of poke.types">
+                  <div
+                    class="icon"
+                    [class]="pokeClass(tipo.type?.name)"
+                    style="margin-bottom: 3px"
+                  >
+                    <img
+                      [src]="pokeTypeSVG(tipo.type?.name)"
+                      height="2%"
+                      width="2%"
+                    />
+                  </div>
+                  <ion-card-subtitle
+                    class="typePokemon ion-text-center"
+                    [style.background-color]="colorType(tipo.type?.name)"
+                  >
+                    {{tipo.type?.name}}
+                  </ion-card-subtitle>
                 </div>
-              </div>
-              <ng-template #condition2ElseBlock>
-                <div style="display: flex; justify-content: center;">
-                  <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
-                    src="../../assets/img/spriteNull.png"
-                    alt="Imagen por defecto"
-                  />
+              </ion-card-header>
+
+              <ion-card-content>
+                <swiper-container
+                  effect="cube"
+                  [centeredSlides]="true"
+                  loop="true"
+                >
+                  <swiper-slide
+                    style="display: flex; justify-content: center"
+                  >
+                  <div  style="display: flex; justify-content: center;">
+                    <img *ngIf="imageExists else condition1ElseBlock"
+                        [src]="'../../assets/Pokemon3d/ani-front/' + poke.name + '.gif'"
+                        [alt]="poke.name">
+
+                  </div>
+                  </swiper-slide>
+                  <swiper-slide
+                    style="display: flex; justify-content: center"
+                  >
+                  <div style="display: flex; justify-content: center;">
+                    <img *ngIf="imageExistShiny else condition1ElseBlock"
+                    [src]="'../../assets/Pokemon3d/ani-front-shiny/' + poke.name + '.gif'"
+                    [alt]="poke.name">
+                  </div>
+                  </swiper-slide>
+                </swiper-container>
+              </ion-card-content>
+
+              <ng-template #condition1ElseBlock>
+                <div *ngIf="poke.sprites?.front_default; else conditionxxxElseBlock">
+                  <div style="display: flex; justify-content: center;">
+                    <img [src]="poke.sprites?.front_default" [alt]="poke.name" />
+                  </div>
                 </div>
+
+                <ng-template #conditionxxxElseBlock>
+                  <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
+                    <div style="display: flex; justify-content: center;">
+                      <img [routerLink]="['/pokemon-profile/' + poke.id]"
+                           [src]="poke.sprites?.other?.['official-artwork']?.front_default"
+                           alt="Imagen por defecto" />
+                    </div>
+                  </div>
+
+                  <ng-template #condition2ElseBlock>
+                    <div style="display: flex; justify-content: center;">
+                      <img style="height: 90px; width: 90px;" [routerLink]="['/pokemon-profile/' + poke.id]"
+                           src="../../assets/img/spriteNull.png"
+                           alt="Imagen por defecto" />
+                    </div>
+                  </ng-template>
+                </ng-template>
               </ng-template>
-            </ng-template>
-          </ion-card>
+            </ion-card>
 
-          <ion-item class="ion-text-center ion-margin-bottom">
-            <ion-label>
-              <h6>Altura: </h6>
-              <p>{{convertWeight(poke.height!)}}</p>
-            </ion-label>
-            <ion-label>
-              <h6>Peso: </h6>
-              <p>{{convertHeight(poke.weight!)}}</p>
-            </ion-label>
-          </ion-item>
+            <ion-item class="ion-text-center ion-margin-bottom">
+              <ion-label>
+                <h6>Altura: </h6>
+                <p>{{convertWeight(poke.height!)}}</p>
+              </ion-label>
+              <ion-label>
+                <h6>Peso: </h6>
+                <p>{{convertHeight(poke.weight!)}}</p>
+              </ion-label>
+            </ion-item>
+          </div>
         </ion-col>
+
       </ion-row>
 
       <ion-row class="ion-justify-content-center">
