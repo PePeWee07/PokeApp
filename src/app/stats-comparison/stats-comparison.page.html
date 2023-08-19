@@ -20,6 +20,37 @@
 <ion-content [fullscreen]="true">
   <div class="container">
 
+
+    <ion-accordion-group class="ion-margin-top ion-padding-horizontal">
+      <ion-accordion value="first" style="border-radius: 10px;">
+        <ion-item slot="header" color="light">
+          <ion-label>Comparar</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <ion-item class="ion-padding-horizontal" color="light">
+            <ion-input color="danger"
+              type="text"
+              label="ID Pokémones"
+              label-placement="stacked"
+              [clearInput]="true"
+              fill="outline"
+              placeholder="ejm: 3, 6, 9  o  7, pikachu, 21"
+              [value]="getFormattedIdPokemon()"
+              (ionChange)="onInputChange($event, true)"
+            ></ion-input>
+          </ion-item>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+
+
+    <ion-toast
+    [isOpen]="isToastOpen"
+    message="Ingrese valores válidos separados por coma (,)"
+    [duration]="2000"
+    (didDismiss)="onInputChange($event, false)"
+  ></ion-toast>
+
     <ion-grid>
       <ion-row class="ion-justify-content-center ion-text-center">
         <ion-col size="6" *ngFor="let poke of pokemon">
@@ -144,7 +175,7 @@
           <ion-accordion-group>
             <ion-accordion value="first" style="border-radius: 10px;">
               <ion-item slot="header" color="light">
-                <ion-label>Desplegar</ion-label>
+                <ion-label>Estadísticas</ion-label>
               </ion-item>
               <div class="ion-padding" slot="content">
                 <ion-list *ngFor="let stat of compareSatats" class="ion-text-center">

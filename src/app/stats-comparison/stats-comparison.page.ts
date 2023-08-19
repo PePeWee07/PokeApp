@@ -24,6 +24,8 @@ export class StatsComparisonPage implements OnInit {
     private idRoute: ActivatedRoute
   ) {}
 
+
+
   //Options Ngx-ECharts --->
   option: EChartsOption = {};
 
@@ -37,13 +39,63 @@ export class StatsComparisonPage implements OnInit {
   compareSatats: any[] = [];
   compareEmpate: any[] = [];
 
-  loadPokemon() {
+  idPokemon: any[] | undefined = [];
+  getIdPokemon() {
+    this.idPokemon = [];
     const id = this.idRoute.snapshot.paramMap.get('id');
+    this.idPokemon = id?.split(',').map(Number);
+    console.log('idPokemon',  this.idPokemon);
+  }
+  getFormattedIdPokemon() {
+    return this.idPokemon?.join(', ');
+  }
 
-    const newIds = id?.split(',').map(Number);
+  isToastOpen = false;
+  setOpen(isOpen: boolean) {
+    this.isToastOpen = isOpen;
+  }
+  onInputChange(event?: any, openToast?: boolean) {
+    this.idPokemon = [];
+    const inputText = event.detail.value;
+
+    if (inputText !== '') {
+      const values = inputText.split(',').map((str: string) => str.trim());
+
+    for (const value of values) {
+      if (!isNaN(Number(value))) {
+        this.idPokemon.push(Number(value));
+      } else {
+        this.idPokemon.push(value);
+      }
+    }
+
+    console.log('idPokemonArray:', this.idPokemon);
+    this.loadPokemon();
+    } else {
+      this.idPokemon = [3,6,9];
+      this.setOpen(openToast!);
+    }
+
+
+
+  }
+
+
+  loadPokemon() {
+    this.pokemon = [];
+    this.compareEmpate = [];
+    this.compareSatats = [];
+    this.option = {};
+    // const id = this.idRoute.snapshot.paramMap.get('id');
+
+    // const newIds = id?.split(',').map(Number);
+
+    let newIds = this.idPokemon;
+
+    console.log('newIds', newIds);
 
     const requests = newIds?.map((id: any) => {
-      return this.pokeService.getPokemonById(id);
+      return this.pokeService.getPokemonByNameOrId(id);
     });
 
 
@@ -202,7 +254,7 @@ for (const stat in tieStats) {
 }
 
   this.compareSatats.push(highestStats);
-  console.log('Pokémon con las estadísticas más altas:', this.compareSatats);
+  // console.log('Pokémon con las estadísticas más altas:', this.compareSatats);
 
     }, (err) => {
       console.log('Error: ', err);
@@ -211,27 +263,9 @@ for (const stat in tieStats) {
   }
 
 
-  transformtext(str: string): string {
-    if (str === undefined) {
-      return 'Null';
-    } else if (str === null) {
-      return 'Null';
-    } else if (str.length === 0) {
-      return 'Null';
-    } else if (str === 'special-defense') {
-      return 'Sp. Def';
-    } else if (str === 'special-attack') {
-      return 'Sp. Atk';
-    }
-
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-
   getPokemonByName(pokemonName: string): Pokemon | undefined {
     return this.pokemon.find(poke => poke.name === pokemonName);
   }
-
 
 
   //cambiamos el modo Dark
@@ -399,6 +433,7 @@ for (const stat in tieStats) {
 
   ngOnInit() {
     this.checkAppMode();
+    this.getIdPokemon();
     this.loadPokemon();
   }
 }

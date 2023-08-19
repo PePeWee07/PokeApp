@@ -28,6 +28,9 @@ export class PokeApiServiceService {
   getPokemonByName(name: string) {
     return this.http.get(environment.URL + `pokemon/${name}`);
   }
+  getPokemonByNameOrId(option: string | number) {
+    return this.http.get(environment.URL + `pokemon/${option}`);
+  }
 
   getPokemonSpecies(id: number | undefined | string) {
     return this.http.get(environment.URL + `pokemon-species/${id}`);
