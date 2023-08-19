@@ -1,30 +1,16 @@
-Agregar lista de movientos al perfil de pokemon
-Agreagar lista de Held_items que puede usar al perfil de pokemon
-Cargar los diferentes sprites al perfil de pokemon
 
----- Descargar de GitHub: {{ 3D Animations }}
+
+
+
+Profile-Pokemon{
+  Existe problemas por el exceso de datos en la etiqueta de "wiper-slide" la cual se encarga
+  de buscar los pokemones con habilidades similares para eso debemos habilitar la carga perezosa
+  la cual puede ser implementada leyendo la documetacion de SWIPER
+}
 
 
 Para pokemonProfile consumiendo de (pokemon-species)
 {
-
---------REPETIDO LOS IDIOMAS "es"-----------
-  "flavor_text_entries" =[
-    {
-        "flavor_text": "Este Pokémon tiene un bulbo en el lomo. Dicen que,\nal absorber nutrientes, el bulbo se transforma en una\nflor grande.",
-        "language": {
-          "name": "es",
-          "url": "https://pokeapi.co/api/v2/language/7/"
-        },
-        "version": {
-          "name": "x",
-          "url": "https://pokeapi.co/api/v2/version/23/"
-        }
-    }
-  ]
-
-
-
 
   CORRECCION PARA CORRECTO PRESENTACION DE CADENA DE EVOLUCION
 
@@ -55,7 +41,5 @@ Para pokemonProfile consumiendo de (pokemon-species)
 
       pokemon-species({ id=679 })
           https://pokeapi.co/api/v2/pokemon?limit= {count}  &offset= {id}
-
-
-
+}
 

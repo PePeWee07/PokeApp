@@ -10,7 +10,7 @@ export class AppComponent {
     { title: 'Inicio', url: '/folder/inbox', icon: 'home' },
     { title: 'Pokémones', url: '/pokemon', icon: 'egg' },
     { title: 'Búsqueda de Pokémon', url: '/pokemon-search', icon: 'search' },
-    { title: 'Stats', url: '/stats-comparison', icon: 'archive' },
+    { title: 'Stats', url: '/stats-comparison/3,6,9', icon: 'archive' },
     // { title: 'Trash', url: '/folder/trash', icon: 'trash' },
     // { title: 'Spam', url: '/folder/spam', icon: 'warning' },
   ];

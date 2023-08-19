@@ -14,6 +14,7 @@
       </ion-toggle>
       <ion-icon slot="end" name="moon"></ion-icon>
     </ion-item>
+
     <ion-accordion-group expand="inset">
       <ion-accordion value="first">
         <ion-item slot="header" color="rose">
@@ -110,6 +111,96 @@
     </ion-fab-list>
   </ion-fab>
 
+  <ion-fab slot="fixed" vertical="top" horizontal="start">
+    <ion-fab-button color="tertiary" size="small">
+      <ion-icon name="search"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="end">
+      <div class="fixed-list">
+        <ion-list style="border-radius: 10px; width: 200px;">
+          <ion-item color="light" >
+            <ion-select label="Filtro Seleciondo" label-placement="floating" [(ngModel)]="filterType">
+              <ion-select-option value="type">Tipo</ion-select-option>
+              <ion-select-option value="name">Nombre</ion-select-option>
+              <ion-select-option value="id">ID</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+
+        <ion-item color="light" style="border-radius: 10px; margin-top: 5px; width: 200px;">
+          <ion-label>Valor:</ion-label>
+          <ion-input label="valor"
+          label-placement="stacked"
+          placeholder="Ingrese en valor" type="text"  placeholder="Ingrese valor" [(ngModel)]="filterValue"></ion-input>
+          <div *ngIf="filteredPokemon.length == 0">
+            <ion-button color="tertiary" size="small" (click)="applyFilter(true)"><ion-icon name="search"></ion-icon></ion-button>
+          </div>
+          <div *ngIf="filteredPokemon.length > 0">
+            <ion-button color="danger" size="small" (click)="cleanFIlter()"><ion-icon name="trash"></ion-icon></ion-button>
+          </div>
+        </ion-item>
+
+        <ion-list style="border-radius: 10px; margin-top: 5px;">
+          <ion-item *ngFor="let poke of filteredPokemon" color="light">
+            <ion-avatar slot="start">
+              <div
+                (mousedown)="startPressTimer(poke.id!);"
+                    (mouseup)="endPressTimer(poke.id!);"
+                    (touchstart)="startPressTimer(poke.id!);"
+                    (touchend)="endPressTimer(poke.id!);"
+                style="display: flex; justify-content: center;"
+                >
+                  <img
+                    *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
+                    [src]="poke.sprites?.front_default"
+                    [alt]="poke.name"
+                  />
+                </div>
+
+                <ng-template #condition1ElseBlock>
+                  <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
+                    <div
+                    (mousedown)="startPressTimer(poke.id!);"
+                    (mouseup)="endPressTimer(poke.id!);"
+                    (touchstart)="startPressTimer(poke.id!);"
+                    (touchend)="endPressTimer(poke.id!);"
+                    style="display: flex; justify-content: center;">
+                      <img style="height: 90px; width: 90px;"
+                        [src]="poke.sprites?.other?.['official-artwork']?.front_default"
+                        [alt]="poke.name"
+                      />
+                    </div>
+                  </div>
+                  <ng-template #condition2ElseBlock>
+                    <div
+                    (mousedown)="startPressTimer(poke.id!);"
+                    (mouseup)="endPressTimer(poke.id!);"
+                    (touchstart)="startPressTimer(poke.id!);"
+                    (touchend)="endPressTimer(poke.id!);"
+                    style="display: flex; justify-content: center;">
+                      <img style="height: 90px; width: 90px;"
+                        src="../../assets/img/spriteNull.png"
+                        [alt]="poke.name"
+                      />
+                    </div>
+                  </ng-template>
+                </ng-template>
+            </ion-avatar>
+            <ion-label>
+              <h2 style="text-transform: capitalize;">{{ poke.name }}</h2>
+              <p>ID: {{ poke.id }}</p>
+              <p>Types: {{ getTypeNames(poke.types) }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <div *ngIf="filteredPokemon.length === 0" class="loading-text">
+          No hay resultados
+        </div>
+      </div>
+    </ion-fab-list>
+  </ion-fab>
+
   <div id="container">
 
     <ion-grid *ngIf="loadedSkeleton">
@@ -138,103 +229,6 @@
 
 
     <ion-grid *ngIf="!loadedSkeleton">
-
-      <ion-row class="ion-justify-content-center">
-        <ion-col size="10">
-          <ion-accordion-group>
-            <ion-accordion value="first">
-              <ion-item slot="header" color="light">
-                <ion-label>Filtrado de Pokemones</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-
-                    <div>
-                      <ion-list style="border-radius: 10px;">
-                        <ion-item color="light" >
-                          <ion-select label="Filtro Seleciondo" label-placement="floating" [(ngModel)]="filterType">
-                            <ion-select-option value="type">Tipo</ion-select-option>
-                            <ion-select-option value="name">Nombre</ion-select-option>
-                            <ion-select-option value="id">ID</ion-select-option>
-                          </ion-select>
-                        </ion-item>
-                      </ion-list>
-
-                      <ion-item color="light" style="border-radius: 10px; margin-top: 5px;">
-                        <ion-label>Valor:</ion-label>
-                        <ion-input placeholder="Ingrese valor" [(ngModel)]="filterValue"></ion-input>
-                        <div *ngIf="filteredPokemon.length == 0">
-                          <ion-button (click)="applyFilter()">Filtrar</ion-button>
-                        </div>
-                        <div *ngIf="filteredPokemon.length > 0">
-                          <ion-button color="danger" size="small" (click)="cleanFIlter()"><ion-icon name="trash"></ion-icon></ion-button>
-                        </div>
-                      </ion-item>
-
-                      <ion-list style="border-radius: 10px; margin-top: 5px;">
-                        <ion-item *ngFor="let poke of filteredPokemon" color="light">
-                          <ion-avatar slot="start">
-                            <div
-                              (mousedown)="startPressTimer(poke.id!);"
-                                  (mouseup)="endPressTimer(poke.id!);"
-                                  (touchstart)="startPressTimer(poke.id!);"
-                                  (touchend)="endPressTimer(poke.id!);"
-                              style="display: flex; justify-content: center;"
-                              >
-                                <img
-                                  *ngIf="poke.sprites?.front_default; else condition1ElseBlock"
-                                  [src]="poke.sprites?.front_default"
-                                  [alt]="poke.name"
-                                />
-                              </div>
-
-                              <ng-template #condition1ElseBlock>
-                                <div *ngIf="poke.sprites?.other?.['official-artwork']?.front_default; else condition2ElseBlock">
-                                  <div
-                                  (mousedown)="startPressTimer(poke.id!);"
-                                  (mouseup)="endPressTimer(poke.id!);"
-                                  (touchstart)="startPressTimer(poke.id!);"
-                                  (touchend)="endPressTimer(poke.id!);"
-                                  style="display: flex; justify-content: center;">
-                                    <img style="height: 90px; width: 90px;"
-                                      [src]="poke.sprites?.other?.['official-artwork']?.front_default"
-                                      [alt]="poke.name"
-                                    />
-                                  </div>
-                                </div>
-                                <ng-template #condition2ElseBlock>
-                                  <div
-                                  (mousedown)="startPressTimer(poke.id!);"
-                                  (mouseup)="endPressTimer(poke.id!);"
-                                  (touchstart)="startPressTimer(poke.id!);"
-                                  (touchend)="endPressTimer(poke.id!);"
-                                  style="display: flex; justify-content: center;">
-                                    <img style="height: 90px; width: 90px;"
-                                      src="../../assets/img/spriteNull.png"
-                                      [alt]="poke.name"
-                                    />
-                                  </div>
-                                </ng-template>
-                              </ng-template>
-                          </ion-avatar>
-                          <ion-label>
-                            <h2>{{ poke.name }}</h2>
-                            <p>ID: {{ poke.id }}</p>
-                            <p>Types: {{ getTypeNames(poke.types) }}</p>
-                          </ion-label>
-                        </ion-item>
-                      </ion-list>
-
-                      <div *ngIf="filteredPokemon.length === 0" class="loading-text">
-                        No hay resultados
-                      </div>
-                    </div>
-
-              </div>
-            </ion-accordion>
-          </ion-accordion-group>
-        </ion-col>
-      </ion-row>
-
       <ion-row style="display: flex; justify-content: center">
         <ion-col size="auto" *ngFor="let poke of pokemon">
           <ion-card

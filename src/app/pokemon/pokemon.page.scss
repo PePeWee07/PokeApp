@@ -91,6 +91,15 @@ ion-skeleton-text {
   display: inline-block;
 }
 
+.fixed-list{
+  max-height: 500px;
+  overflow-y: auto;
+  color: #595761;
+  display: inline-block;
+  justify-content: center;
+  border-radius: 10px;
+
+}
 
 ion-accordion-group{
   margin-bottom: 3px;

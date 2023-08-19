@@ -34,7 +34,7 @@ export class PokemonPage implements OnInit {
     this.filterValue = '';
     this.filteredPokemon = [];
   }
-  applyFilter() {
+  async applyFilter(openToast: boolean) {
     if(this.filterType && this.filterValue){
 
       // Lógica para aplicar los filtros
@@ -59,13 +59,39 @@ export class PokemonPage implements OnInit {
         this.foundById = this.filteredPokemon.length > 0;
       }
 
-    } else if(this.filterType && !this.filterValue){
-      console.log("Digite un valor para filtrar");
+    }  else if(this.filterType && !this.filterValue){
+
+        const alert = await this.alertController.create({
+          header: 'Alerta',
+          subHeader: 'Digite un valor para filtrar',
+          message: 'Es necesario que escriba un valor para poder filtrar',
+          buttons: ['OK'],
+        });
+
+        await alert.present();
+
     } else if(!this.filterType && this.filterValue){
-      console.log("Seleccione un tipo de filtro");
+
+      const alert = await this.alertController.create({
+        header: 'Alerta',
+        subHeader: 'Seleccione un tipo de filtro',
+        message: 'Es necesario que elija un filtro para poder filtrar',
+        buttons: ['OK'],
+      });
+
+      await alert.present();
     }
     else {
       console.log("Seleccione un tipo de filtro y digite un valor para filtrar");
+
+      const alert = await this.alertController.create({
+        header: 'Alerta',
+        subHeader: 'Complete los campos',
+        message: 'Seleccione un tipo de filtro y digite un valor para filtrar',
+        buttons: ['OK'],
+      });
+
+      await alert.present();
     }
   }
 
@@ -75,7 +101,7 @@ export class PokemonPage implements OnInit {
     this.isToastOpen = isOpen;
   }
 
-  limit: number = 25; // Limite de pokemones a mostrar por ionic infinite scroll
+  limit: number = 100; // Limite de pokemones a mostrar por ionic infinite scroll
   //capturamos el valor del input para el limite
    onInputChange(event: any, openToast: boolean) {
     const newValue = parseInt(event.detail.value, 10);
