@@ -35,6 +35,7 @@ Sigue estos pasos para empezar con PokeApp:
 #### Vista de Pokémones
 ![Vista de Pokémones](src/assets/CapturasPantalla/listaPokemon.png)
 #### Seleccion de Pokémones
+Esto sirve para poder comparar las estadísticas de los Pokémones seleccionados, se puede ajustar el límite de Pokémones en las opciones.
 ![Seleccion de Pokémones](src/assets/CapturasPantalla/pokemonSelecionados.png)
 #### Opciones
 ![Opciones](src/assets/CapturasPantalla/Opciones.png)
