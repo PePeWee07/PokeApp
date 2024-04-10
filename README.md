@@ -18,7 +18,7 @@ Sigue estos pasos para empezar con PokeApp:
 1. **Clonar el Repositorio:** Comienza por clonar este repositorio en tu máquina local:
 
    ```
-   git https://github.com/PePeWee07/PokeApp
+   git clone https://github.com/PePeWee07/PokeApp
    ```
 
 2. **Instalar Dependencias:** Asegúrate de tener instalado el entorno de desarrollo adecuado y todas las dependencias necesarias.
